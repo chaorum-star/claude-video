@@ -1,0 +1,319 @@
+{
+    "canvas_config": {
+        "width": 1080,
+        "height": 1920,
+        "ratio": "original"
+    },
+    "color_space": 0,
+    "config": {
+        "adjust_max_index": 1,
+        "attachment_info": [],
+        "combination_max_index": 1,
+        "export_range": null,
+        "extract_audio_last_index": 1,
+        "lyrics_recognition_id": "",
+        "lyrics_sync": true,
+        "lyrics_taskinfo": [],
+        "maintrack_adsorb": true,
+        "material_save_mode": 0,
+        "multi_language_current": "none",
+        "multi_language_list": [],
+        "multi_language_main": "none",
+        "multi_language_mode": "none",
+        "original_sound_last_index": 1,
+        "record_audio_last_index": 1,
+        "sticker_max_index": 1,
+        "subtitle_keywords_config": null,
+        "subtitle_recognition_id": "",
+        "subtitle_sync": true,
+        "subtitle_taskinfo": [],
+        "system_font_list": [],
+        "use_float_render": false,
+        "video_mute": false,
+        "zoom_info_params": null
+    },
+    "cover": null,
+    "create_time": 0,
+    "duration": 6000000,
+    "extra_info": null,
+    "fps": 30,
+    "free_render_index_mode_on": false,
+    "group_container": null,
+    "id": "91E08AC5-22FB-47e2-9AA0-7DC300FAEA2B",
+    "is_drop_frame_timecode": false,
+    "keyframe_graph_list": [],
+    "keyframes": {
+        "adjusts": [],
+        "audios": [],
+        "effects": [],
+        "filters": [],
+        "handwrites": [],
+        "stickers": [],
+        "texts": [],
+        "videos": []
+    },
+    "last_modified_platform": {
+        "app_id": 359289,
+        "app_source": "cc",
+        "app_version": "6.7.0",
+        "os": "windows"
+    },
+    "lyrics_effects": [],
+    "materials": {
+        "ai_translates": [],
+        "audio_balances": [],
+        "audio_effects": [],
+        "audio_fades": [],
+        "audio_track_indexes": [],
+        "audios": [],
+        "beats": [],
+        "canvases": [],
+        "chromas": [],
+        "color_curves": [],
+        "digital_humans": [],
+        "drafts": [],
+        "effects": [],
+        "flowers": [],
+        "green_screens": [],
+        "handwrites": [],
+        "hsl": [],
+        "images": [],
+        "log_color_wheels": [],
+        "loudnesses": [],
+        "manual_deformations": [],
+        "masks": [],
+        "material_animations": [
+            {
+                "id": "fe18115a1ae948839b387ca3cf8e17cc",
+                "type": "sticker_animation",
+                "multi_language_current": "none",
+                "animations": [
+                    {
+                        "anim_adjust_params": null,
+                        "platform": "all",
+                        "panel": "",
+                        "material_type": "sticker",
+                        "name": "Wiping In",
+                        "id": "7509716469614136593",
+                        "type": "in",
+                        "resource_id": "7509716469614136593",
+                        "start": 0,
+                        "duration": 500000
+                    },
+                    {
+                        "anim_adjust_params": null,
+                        "platform": "all",
+                        "panel": "",
+                        "material_type": "sticker",
+                        "name": "Wiping Out",
+                        "id": "7509695130912296209",
+                        "type": "out",
+                        "resource_id": "7509695130912296209",
+                        "start": 2500000,
+                        "duration": 500000
+                    }
+                ]
+            },
+            {
+                "id": "2cb6f8f14d1e46659b37d8fdd9c3b28c",
+                "type": "sticker_animation",
+                "multi_language_current": "none",
+                "animations": [
+                    {
+                        "anim_adjust_params": null,
+                        "platform": "all",
+                        "panel": "",
+                        "material_type": "sticker",
+                        "name": "Golden Dust",
+                        "id": "7331632775948145153",
+                        "type": "in",
+                        "resource_id": "7331632775948145153",
+                        "start": 0,
+                        "duration": 500000
+                    }
+                ]
+            }
+        ],
+        "material_colors": [],
+        "multi_language_refs": [],
+        "placeholders": [],
+        "plugin_effects": [],
+        "primary_color_wheels": [],
+        "realtime_denoises": [],
+        "shapes": [],
+        "smart_crops": [],
+        "smart_relights": [],
+        "sound_channel_mappings": [],
+        "speeds": [],
+        "stickers": [],
+        "tail_leaders": [],
+        "text_templates": [],
+        "texts": [
+            {
+                "id": "1514bc404cb94d02a4cf72b34531bfbe",
+                "content": "{\"styles\": [{\"fill\": {\"alpha\": 1.0, \"content\": {\"render_type\": \"solid\", \"solid\": {\"alpha\": 1.0, \"color\": [1.0, 1.0, 1.0]}}}, \"range\": [0, 16], \"size\": 15.0, \"bold\": true, \"italic\": false, \"underline\": false, \"strokes\": [{\"content\": {\"solid\": {\"alpha\": 1.0, \"color\": [0.0, 0.0, 0.0]}}, \"width\": 0.08000000000000002}]}], \"text\": \"[자막1] 텍스트만 바꿔보세요\"}",
+                "typesetting": 0,
+                "alignment": 0,
+                "letter_spacing": 0.0,
+                "line_spacing": 0.02,
+                "line_feed": 1,
+                "line_max_width": 0.82,
+                "force_apply_line_max_width": false,
+                "check_flag": 15,
+                "type": "text",
+                "global_alpha": 1.0
+            },
+            {
+                "id": "4d9913f532bc4966968f074773e8535c",
+                "content": "{\"styles\": [{\"fill\": {\"alpha\": 1.0, \"content\": {\"render_type\": \"solid\", \"solid\": {\"alpha\": 1.0, \"color\": [1.0, 0.9, 0.2]}}}, \"range\": [0, 13], \"size\": 15.0, \"bold\": true, \"italic\": false, \"underline\": false, \"strokes\": [{\"content\": {\"solid\": {\"alpha\": 1.0, \"color\": [0.0, 0.0, 0.0]}}, \"width\": 0.08000000000000002}]}], \"text\": \"[자막2] 두 번째 효과\"}",
+                "typesetting": 0,
+                "alignment": 0,
+                "letter_spacing": 0.0,
+                "line_spacing": 0.02,
+                "line_feed": 1,
+                "line_max_width": 0.82,
+                "force_apply_line_max_width": false,
+                "check_flag": 15,
+                "type": "text",
+                "global_alpha": 1.0
+            }
+        ],
+        "time_marks": [],
+        "transitions": [],
+        "video_effects": [],
+        "video_trackings": [],
+        "videos": [],
+        "vocal_beautifys": [],
+        "vocal_separations": []
+    },
+    "mutable_config": null,
+    "name": "",
+    "new_version": "140.0.0",
+    "path": "",
+    "platform": {
+        "app_id": 359289,
+        "app_source": "cc",
+        "app_version": "6.7.0",
+        "os": "windows"
+    },
+    "relationships": [],
+    "render_index_track_mode_on": false,
+    "retouch_cover": null,
+    "source": "default",
+    "static_cover_image_path": "",
+    "time_marks": null,
+    "tracks": [
+        {
+            "attribute": 0,
+            "flag": 0,
+            "id": "448409e6677d4ea78f484668b06e5718",
+            "is_default_name": false,
+            "name": "text",
+            "segments": [
+                {
+                    "enable_adjust": true,
+                    "enable_color_correct_adjust": false,
+                    "enable_color_curves": true,
+                    "enable_color_match_adjust": false,
+                    "enable_color_wheels": true,
+                    "enable_lut": true,
+                    "enable_smart_color_adjust": false,
+                    "last_nonzero_volume": 1.0,
+                    "reverse": false,
+                    "track_attribute": 0,
+                    "track_render_index": 0,
+                    "visible": true,
+                    "id": "778b7fa0590f40e38b98c30fd0189820",
+                    "material_id": "1514bc404cb94d02a4cf72b34531bfbe",
+                    "target_timerange": {
+                        "start": 0,
+                        "duration": 3000000
+                    },
+                    "common_keyframes": [],
+                    "keyframe_refs": [],
+                    "source_timerange": null,
+                    "speed": 1.0,
+                    "volume": 1.0,
+                    "extra_material_refs": [
+                        "d14933b1f57348eca1d6909df36beaca",
+                        "fe18115a1ae948839b387ca3cf8e17cc"
+                    ],
+                    "clip": {
+                        "alpha": 1.0,
+                        "flip": {
+                            "horizontal": false,
+                            "vertical": false
+                        },
+                        "rotation": 0.0,
+                        "scale": {
+                            "x": 1.0,
+                            "y": 1.0
+                        },
+                        "transform": {
+                            "x": 0.0,
+                            "y": -0.6
+                        }
+                    },
+                    "uniform_scale": {
+                        "on": true,
+                        "value": 1.0
+                    },
+                    "render_index": 15000
+                },
+                {
+                    "enable_adjust": true,
+                    "enable_color_correct_adjust": false,
+                    "enable_color_curves": true,
+                    "enable_color_match_adjust": false,
+                    "enable_color_wheels": true,
+                    "enable_lut": true,
+                    "enable_smart_color_adjust": false,
+                    "last_nonzero_volume": 1.0,
+                    "reverse": false,
+                    "track_attribute": 0,
+                    "track_render_index": 0,
+                    "visible": true,
+                    "id": "63fca20e22c347e0a4d44d8e5d0f10ba",
+                    "material_id": "4d9913f532bc4966968f074773e8535c",
+                    "target_timerange": {
+                        "start": 3000000,
+                        "duration": 3000000
+                    },
+                    "common_keyframes": [],
+                    "keyframe_refs": [],
+                    "source_timerange": null,
+                    "speed": 1.0,
+                    "volume": 1.0,
+                    "extra_material_refs": [
+                        "0a414b88a20a48a68e858f618adbed70",
+                        "2cb6f8f14d1e46659b37d8fdd9c3b28c"
+                    ],
+                    "clip": {
+                        "alpha": 1.0,
+                        "flip": {
+                            "horizontal": false,
+                            "vertical": false
+                        },
+                        "rotation": 0.0,
+                        "scale": {
+                            "x": 1.0,
+                            "y": 1.0
+                        },
+                        "transform": {
+                            "x": 0.0,
+                            "y": -0.6
+                        }
+                    },
+                    "uniform_scale": {
+                        "on": true,
+                        "value": 1.0
+                    },
+                    "render_index": 15000
+                }
+            ],
+            "type": "text"
+        }
+    ],
+    "update_time": 0,
+    "version": 360000
+}
