@@ -1,0 +1,247 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Reference Lab · 기획 분석 + CapCut 템플릿</title>
+  <style>
+    :root{
+      --paper:#f5f1e8;--paper-deep:#ebe4d7;--card:#fffdf9;--ink:#17181d;
+      --muted:#6e6c72;--line:#d9d1c3;--coral:#ff5d49;--coral-soft:#fff0ec;
+      --navy:#202739;--green:#13755a;--green-soft:#e9f6f0;--amber:#9a6100;
+      --shadow:0 18px 55px rgba(59,48,30,.08)
+    }
+    *{box-sizing:border-box}
+    html{scroll-behavior:smooth}
+    body{
+      margin:0;background:
+        radial-gradient(circle at 88% 3%,rgba(255,93,73,.10),transparent 26rem),
+        var(--paper);color:var(--ink);word-break:keep-all;
+      font-family:Pretendard,"Pretendard Variable","Apple SD Gothic Neo","Noto Sans KR",-apple-system,BlinkMacSystemFont,sans-serif;
+      -webkit-font-smoothing:antialiased
+    }
+    button,input,select,textarea{font:inherit}
+    button{border:0;cursor:pointer}
+    .shell{width:min(1280px,calc(100% - 48px));margin:0 auto}
+    .hero{display:grid;grid-template-columns:minmax(0,1fr) 310px;gap:68px;align-items:end;padding:72px 0 52px}
+    .eyebrow{font-size:14px;font-weight:900;color:var(--coral);letter-spacing:.13em;text-transform:uppercase}
+    h1{margin:14px 0 20px;font-size:clamp(43px,4.45vw,62px);line-height:1.09;letter-spacing:-.055em;font-weight:850}
+    .headline-line{display:block;white-space:nowrap}
+    .hero-copy{max-width:830px;color:var(--muted);font-size:17px;line-height:1.78;letter-spacing:-.018em}
+    .flow{border-left:3px solid var(--ink);padding:4px 0 4px 22px;display:grid;gap:13px;font-size:15px;font-weight:800}
+    .flow span{display:flex;align-items:center;gap:9px}.flow i{font-style:normal;color:var(--coral)}
+    .section{margin-bottom:34px}
+    .section-card{background:rgba(255,253,249,.94);border:1px solid var(--line);border-radius:28px;box-shadow:var(--shadow)}
+    .section-head{display:flex;justify-content:space-between;align-items:flex-end;gap:24px;margin-bottom:18px}
+    .section-kicker{display:block;margin-bottom:7px;color:var(--coral);font-size:12px;font-weight:900;letter-spacing:.12em}
+    h2{margin:0;font-size:29px;line-height:1.2;letter-spacing:-.035em}
+    .section-description{margin:7px 0 0;color:var(--muted);font-size:14px;line-height:1.55}
+    .library{padding:28px}
+    .library-count{color:var(--muted);font-size:13px}.library-count strong{color:var(--ink);font-size:20px}
+    .filter-grid{display:grid;grid-template-columns:1.45fr repeat(3,minmax(145px,1fr)) auto;gap:10px;margin-bottom:18px}
+    .field{display:grid;gap:7px}.field label{font-size:12px;font-weight:850;color:#57555b}
+    input,select,textarea{width:100%;border:1px solid var(--line);background:#fff;border-radius:13px;color:var(--ink);outline:none;transition:.18s ease}
+    input,select{height:48px;padding:0 14px}
+    textarea{padding:17px;resize:vertical;line-height:1.6}
+    input:focus,select:focus,textarea:focus{border-color:var(--coral);box-shadow:0 0 0 3px rgba(255,93,73,.12)}
+    .reset-button{align-self:end;height:48px;padding:0 17px;border:1px solid var(--line);border-radius:13px;background:var(--paper);font-weight:800;color:#55535a}
+    .insight-list{display:grid;grid-template-columns:1fr;gap:10px}
+    .insight-card{border:1px solid #e3dcd0;border-radius:18px;padding:17px;background:#fff;display:grid;grid-template-columns:minmax(270px,.85fr) minmax(0,1.65fr) minmax(150px,.4fr);align-items:center;gap:20px;min-width:0}
+    .insight-card-top{display:flex;justify-content:space-between;align-items:flex-start;gap:14px}
+    .insight-title{font-size:17px;font-weight:850;line-height:1.42;letter-spacing:-.025em}
+    .creator{margin-top:4px;color:var(--muted);font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:360px}
+    .score-pair{display:flex;gap:5px;flex-shrink:0}.score-badge{border-radius:9px;background:var(--coral-soft);color:#aa392b;padding:7px 8px;font-size:11px;font-weight:900;white-space:nowrap}
+    .insight-rows{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px 15px}.insight-row{display:grid;grid-template-columns:74px 1fr;gap:9px;font-size:12px;line-height:1.5}.insight-row dt{font-weight:850;color:#777178}.insight-row dd{margin:0;color:#34343a}
+    .tags{display:flex;flex-wrap:wrap;gap:6px}.tag{background:#f2eee7;border-radius:999px;padding:5px 8px;font-size:11px;color:#55515a}
+    .card-actions{display:flex;gap:7px;flex-wrap:wrap;justify-content:flex-end}.card-actions .button{width:100%}
+    .button{display:inline-flex;align-items:center;justify-content:center;gap:7px;border-radius:999px;padding:11px 16px;font-weight:850;font-size:13px;transition:transform .15s ease,box-shadow .15s ease}
+    .button:hover{transform:translateY(-1px)}.button-primary{background:var(--coral);color:#fff;box-shadow:0 7px 18px rgba(255,93,73,.22)}
+    .button-dark{background:var(--navy);color:#fff}.button-ghost{background:transparent;border:1px solid var(--line);color:var(--ink)}
+    .button-soft{background:var(--green-soft);color:var(--green)}
+    .empty{grid-column:1/-1;text-align:center;color:var(--muted);padding:50px 18px;border:1px dashed var(--line);border-radius:17px;background:rgba(255,255,255,.38)}
+    .intake{display:grid;grid-template-columns:minmax(0,1.3fr) minmax(300px,.7fr);gap:14px}
+    .intake-main,.intake-side{padding:26px}.intake-main textarea{min-height:130px}.intake-main .script{min-height:96px;margin-top:10px}
+    .form-error{display:none;margin-top:11px;padding:12px 14px;border-radius:12px;background:#fff0ed;color:#a43226;font-size:13px;line-height:1.55}.form-error.show{display:block}
+    .intake-actions{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-top:14px}.hint{color:var(--muted);font-size:12px;line-height:1.5}
+    .intake-side{background:var(--navy);border-color:var(--navy);color:#fff;box-shadow:none}
+    .intake-side h3{margin:0 0 17px;font-size:18px}.intake-side ol{list-style:none;padding:0;margin:0;display:grid;gap:14px;counter-reset:flow}
+    .intake-side li{counter-increment:flow;display:grid;grid-template-columns:28px 1fr;gap:10px;font-size:13px;line-height:1.45;color:#dce0eb}.intake-side li:before{content:counter(flow);width:25px;height:25px;border-radius:50%;display:grid;place-items:center;background:var(--coral);color:#fff;font-size:11px;font-weight:900}
+    .link-example{margin-top:18px;padding-top:16px;border-top:1px solid #3b4356;color:#abb2c2;font-size:11px;line-height:1.6;word-break:break-all}
+    .workspace-head{display:flex;justify-content:space-between;align-items:center;gap:18px;margin:44px 0 16px}
+    .workspace-actions{display:flex;gap:8px;flex-wrap:wrap}
+    .statusbar{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:15px}.pill{border:1px solid var(--line);border-radius:999px;padding:7px 11px;background:rgba(255,255,255,.58);font-size:11px;color:var(--muted)}.pill.ok{color:var(--green);border-color:#b9ddce}.pill.warn{color:var(--amber);border-color:#e4c994}
+    .output-root{margin:0 0 15px;padding:12px 14px;border-radius:12px;background:#ebe5da;color:#5c5853;font-size:12px;word-break:break-all}
+    .jobs{display:grid;gap:13px;padding-bottom:80px}
+    .job{background:var(--card);border:1px solid var(--line);border-radius:21px;padding:20px;box-shadow:0 8px 28px rgba(59,48,30,.045)}
+    .jobtop{display:flex;justify-content:space-between;gap:16px;align-items:flex-start}.source{font-weight:800;font-size:14px;word-break:break-all}.state{border-radius:999px;padding:6px 10px;background:#eee9e0;font-size:11px;font-weight:900;white-space:nowrap}.state.done{background:var(--green-soft);color:var(--green)}.state.failed{background:#fff0ed;color:#a43226}
+    .progress{height:6px;background:#ebe6dc;border-radius:10px;overflow:hidden;margin:13px 0 9px}.bar{height:100%;background:linear-gradient(90deg,var(--coral),#ff8c69);transition:width .35s}
+    .meta{display:flex;justify-content:space-between;gap:12px;color:var(--muted);font-size:11px}
+    .result-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:14px}.result-card{border:1px solid #e3dcd0;border-radius:14px;padding:13px;background:#fff}.result-card h3{font-size:12px;margin:0 0 6px}.result-card p{font-size:12px;line-height:1.5;color:var(--muted);margin:3px 0}.score{font-weight:900;color:var(--coral)}
+    .path-box{display:grid;grid-template-columns:90px 1fr;gap:10px;margin-top:12px;padding:11px 13px;border-radius:12px;background:#f4f1eb;font-size:11px}.path-box strong{color:#6d6964}.path-box code{font-family:"SFMono-Regular",Consolas,monospace;word-break:break-all;color:#303036}
+    .job-actions{display:flex;gap:7px;margin-top:12px;flex-wrap:wrap}.job-actions .button{padding:9px 13px;font-size:11px}
+    .error{margin-top:12px;padding:12px 14px;border-radius:12px;background:#fff0ed;color:#a43226;font-size:13px;line-height:1.55}
+    @media(max-width:1050px){.hero{grid-template-columns:1fr;gap:25px}.flow{grid-template-columns:repeat(3,1fr);border-left:0;border-top:2px solid var(--ink);padding:18px 0 0}.filter-grid{grid-template-columns:repeat(2,1fr)}.reset-button{align-self:end}.insight-card{grid-template-columns:1fr}.card-actions{justify-content:flex-start}.card-actions .button{width:auto}.intake{grid-template-columns:1fr}}
+    @media(max-width:720px){.shell{width:min(100% - 28px,1280px)}.hero{padding:42px 0 35px}.headline-line{white-space:normal}.hero-copy{font-size:15px}.flow{grid-template-columns:1fr}.library{padding:18px}.filter-grid,.insight-rows,.result-grid{grid-template-columns:1fr}.section-head,.workspace-head,.intake-actions,.jobtop,.meta{align-items:flex-start;flex-direction:column}.reset-button{width:100%}.insight-row{grid-template-columns:68px 1fr}.intake-main,.intake-side{padding:20px}.intake-actions .button{width:100%}.workspace-actions{width:100%}.workspace-actions .button{flex:1}.score-pair{align-self:flex-start}.path-box{grid-template-columns:1fr}}
+  </style>
+</head>
+<body>
+  <header class="hero shell">
+    <div>
+      <div class="eyebrow">Reference → Plan + Edit</div>
+      <h1><span class="headline-line">사랑받은 이유를 기록하고</span><span class="headline-line">편집 문법은 바로 재사용</span></h1>
+      <div class="hero-copy">공개 릴스의 반응과 영상 구조를 함께 읽습니다. 시의성·3초 후킹·CTA·고객 인사이트는 검색 가능한 기획 자산으로 쌓고, 자막과 영상 효과는 내 CapCut 리소스에 맞춘 교체형 초안으로 만듭니다.</div>
+    </div>
+    <div class="flow">
+      <span><i>01</i> 링크 분석</span>
+      <span><i>02</i> 기획 인사이트 축적</span>
+      <span><i>03</i> CapCut 초안 제작</span>
+    </div>
+  </header>
+
+  <main class="shell">
+    <section class="section section-card library">
+      <div class="section-head">
+        <div><span class="section-kicker">PLANNING LIBRARY</span><h2>기획 인사이트 찾기</h2><p class="section-description">쌓인 레퍼런스를 기획 조건으로 좁혀 다음 콘텐츠의 출발점으로 사용하세요.</p></div>
+        <div class="library-count"><strong id="archiveCount">0</strong>개 결과 · 최대 10개 표시</div>
+      </div>
+      <div class="filter-grid">
+        <div class="field"><label for="topicFilter">시의성 주제</label><input id="topicFilter" type="search" placeholder="주제·키워드·작성자 검색"></div>
+        <div class="field"><label for="hookFilter">3초 후킹 카테고리</label><select id="hookFilter"><option value="">전체 후킹</option></select></div>
+        <div class="field"><label for="purposeFilter">발행 목적</label><select id="purposeFilter"><option value="">전체 목적</option></select></div>
+        <div class="field"><label for="insightFilter">인사이트</label><select id="insightFilter"><option value="">전체 인사이트</option></select></div>
+        <button class="reset-button" id="resetFilters">초기화</button>
+      </div>
+      <div class="insight-list" id="archive"><div class="empty">분석 자료를 불러오는 중입니다.</div></div>
+    </section>
+
+    <section class="section intake">
+      <div class="section-card intake-main">
+        <div class="section-head"><div><span class="section-kicker">NEW REFERENCE</span><h2>새 레퍼런스 분석</h2><p class="section-description">프로필 주소가 아닌 개별 릴스의 공유 링크를 넣어주세요.</p></div></div>
+        <textarea id="sources" placeholder="Instagram 릴스 링크를 한 줄에 하나씩 넣어주세요.&#10;https://www.instagram.com/reel/DcRtVswzIu_/&#10;https://www.instagram.com/reel/..."></textarea>
+        <textarea class="script" id="replacementText" placeholder="선택 · 내 자막 원고를 넣으면 레퍼런스의 타이밍과 강조 위치에 맞춰 자동 배치합니다."></textarea>
+        <div class="form-error" id="formError"></div>
+        <div class="intake-actions"><span class="hint">여러 링크를 넣으면 같은 원고를 각 템플릿에 적용합니다.</span><button class="button button-primary" id="submitJobs">기획 분석 + 템플릿 만들기</button></div>
+      </div>
+      <aside class="section-card intake-side">
+        <h3>한 번 분석하면 이렇게 연결됩니다</h3>
+        <ol><li>시의성·3초 후킹·발행 목적·댓글 인사이트를 분류합니다.</li><li>Obsidian의 원본 노트 → 인사이트 카드 → 발행 후보로 연결합니다.</li><li>영상·문구만 교체할 수 있는 CapCut 초안과 결과 폴더를 만듭니다.</li></ol>
+        <div class="link-example">올바른 링크: instagram.com/reel/릴스번호/<br>분석 불가: instagram.com/계정이름/</div>
+      </aside>
+    </section>
+
+    <section class="workspace">
+      <div class="workspace-head">
+        <div><span class="section-kicker">CAPCUT WORKSPACE</span><h2>CapCut 작업 보관함</h2><p class="section-description">작업별 결과 경로와 연결된 편집 초안을 확인합니다.</p></div>
+        <div class="workspace-actions"><button class="button button-dark" data-action="open-capcut">CapCut 바로가기</button><button class="button button-ghost" data-action="open-obsidian">인사이트 허브</button></div>
+      </div>
+      <div class="statusbar"><span class="pill" id="core">도구 확인 중</span><span class="pill" id="whisper">Whisper 확인 중</span><span class="pill" id="ocr">OCR 확인 중</span><span class="pill" id="obsidian">Obsidian 확인 중</span></div>
+      <div class="output-root" id="outputRoot">결과 저장 위치를 확인 중입니다.</div>
+      <div class="jobs" id="jobs"><div class="empty">아직 맡긴 릴스가 없습니다.</div></div>
+    </section>
+  </main>
+
+  <script>
+    const $=id=>document.getElementById(id);
+    let currentState={planning_archive:[],jobs:[]};
+    let optionSignature='';
+
+    async function api(path,options={}){const response=await fetch(path,{headers:{'Content-Type':'application/json'},...options});const body=await response.json();if(!response.ok)throw new Error(body.error||'요청 실패');return body}
+    const escapeHtml=value=>String(value??'').replace(/[&<>"]/g,char=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[char]));
+    const values=(item,key,fallback=[])=>Array.isArray(item[key])&&item[key].length?item[key]:fallback;
+    const unique=list=>[...new Set(list.filter(Boolean))].sort((a,b)=>String(a).localeCompare(String(b),'ko'));
+
+    function isProfileUrl(value){try{const url=new URL(value);const instagram=url.hostname==='instagram.com'||url.hostname.endsWith('.instagram.com');return instagram&&!/^\/(reel|p)\/[^/]+\/?/.test(url.pathname)}catch{return false}}
+    function showFormError(message=''){$('formError').textContent=message;$('formError').classList.toggle('show',Boolean(message))}
+    async function submitJobs(){
+      const sourceText=$('sources').value.trim();
+      const replacement_text=$('replacementText').value.trim();
+      if(!sourceText){showFormError('분석할 개별 릴스 링크를 넣어주세요.');return}
+      const sources=sourceText.split(/\n+/).map(value=>value.trim()).filter(Boolean);
+      if(sources.some(isProfileUrl)){showFormError('프로필 주소는 영상이 아닙니다. 프로필에서 원하는 릴스를 연 뒤 공유 → 링크 복사로 받은 instagram.com/reel/.../ 주소를 넣어주세요.');return}
+      showFormError();
+      try{await api('/api/jobs',{method:'POST',body:JSON.stringify({sources,replacement_text})});$('sources').value='';poll();document.querySelector('.workspace').scrollIntoView({behavior:'smooth'})}
+      catch(error){showFormError(error.message)}
+    }
+
+    async function openFolder(path){try{await api('/api/open-folder',{method:'POST',body:JSON.stringify({path})})}catch(error){alert(error.message)}}
+    async function openCapcut(){try{await api('/api/open-capcut',{method:'POST',body:'{}'})}catch(error){alert(error.message)}}
+    async function openObsidian(path=''){try{await api('/api/open-obsidian',{method:'POST',body:JSON.stringify({path})})}catch(error){alert(error.message)}}
+
+    function hookValues(item){return values(item,'hook_categories',[item.hook_score?'기타 선언형':''].filter(Boolean))}
+    function purposeValues(item){return values(item,'publication_purposes',['인지·신뢰'])}
+    function insightValues(item){return values(item,'insights',(item.loved_points||[]).map(value=>value.point))}
+    function timelinessValues(item){return values(item,'timeliness_signals',item.keywords||[])}
+
+    function populateFilters(items){
+      const hooks=unique(items.flatMap(hookValues));
+      const purposes=unique(items.flatMap(purposeValues));
+      const insights=unique(items.flatMap(insightValues));
+      const signature=JSON.stringify([hooks,purposes,insights]);
+      if(signature===optionSignature)return;
+      optionSignature=signature;
+      for(const [id,label,list] of [['hookFilter','전체 후킹',hooks],['purposeFilter','전체 목적',purposes],['insightFilter','전체 인사이트',insights]]){
+        const select=$(id),selected=select.value;
+        select.innerHTML=`<option value="">${label}</option>`+list.map(value=>`<option value="${escapeHtml(value)}">${escapeHtml(value)}</option>`).join('');
+        if(list.includes(selected))select.value=selected;
+      }
+    }
+
+    function filterArchive(){
+      const items=currentState.planning_archive||[];
+      populateFilters(items);
+      const query=$('topicFilter').value.trim().toLocaleLowerCase('ko');
+      const hook=$('hookFilter').value,purpose=$('purposeFilter').value,insight=$('insightFilter').value;
+      const filtered=items.filter(item=>{
+        const haystack=[item.topic,item.creator,...(item.keywords||[]),...timelinessValues(item)].join(' ').toLocaleLowerCase('ko');
+        return (!query||haystack.includes(query))&&(!hook||hookValues(item).includes(hook))&&(!purpose||purposeValues(item).includes(purpose))&&(!insight||insightValues(item).includes(insight));
+      });
+      $('archiveCount').textContent=filtered.length;
+      renderArchive(filtered.slice(0,10));
+    }
+
+    function tagList(items,limit=3){const list=(items||[]).slice(0,limit);return list.length?`<div class="tags">${list.map(value=>`<span class="tag">${escapeHtml(value)}</span>`).join('')}</div>`:'<span>분류 없음</span>'}
+    function renderArchive(items){
+      if(!items.length){$('archive').innerHTML='<div class="empty">조건에 맞는 기획 인사이트가 없습니다. 필터를 초기화하거나 새 레퍼런스를 분석해보세요.</div>';return}
+      $('archive').innerHTML=items.map(item=>`<article class="insight-card">
+        <div class="insight-card-top"><div style="min-width:0"><div class="insight-title">${escapeHtml(item.topic||'주제 미정')}</div><div class="creator">${escapeHtml(item.creator||'작성자 판별 불가')}</div></div><div class="score-pair"><span class="score-badge">시의성 ${item.timeliness_score||0}/5</span><span class="score-badge">후킹 ${item.hook_score||0}/5</span></div></div>
+        <dl class="insight-rows"><div class="insight-row"><dt>시의성 주제</dt><dd>${tagList(timelinessValues(item))}</dd></div><div class="insight-row"><dt>3초 후킹</dt><dd>${tagList(hookValues(item))}</dd></div><div class="insight-row"><dt>발행 목적</dt><dd>${tagList(purposeValues(item))}</dd></div><div class="insight-row"><dt>인사이트</dt><dd>${tagList(insightValues(item),4)}</dd></div></dl>
+        <div class="card-actions">${item.obsidian_source_note?`<button class="button button-soft" data-action="open-obsidian" data-path="${escapeHtml(item.obsidian_source_note)}">Obsidian에서 기획하기</button>`:''}${item.work_dir?`<button class="button button-ghost" data-action="open-folder" data-path="${escapeHtml(item.work_dir)}">분석 근거 보기</button>`:''}</div>
+      </article>`).join('');
+    }
+
+    function statusLabel(status){return {queued:'대기',running:'분석 중',done:'완료',partial:'안전본 완료',failed:'실패'}[status]||status}
+    function friendlyError(value){const message=String(value||'');if(/instagram:user|Unable to extract data/.test(message))return '프로필 주소가 입력되었습니다. 원하는 릴스를 연 뒤 공유 → 링크 복사로 받은 개별 릴스 주소를 넣어주세요.';if(/login|required|cookie/i.test(message))return 'Instagram 다운로드가 차단되었습니다. Chrome에서 Instagram에 로그인한 뒤 같은 릴스 링크로 다시 시도해주세요.';return message.length>420?message.slice(-420):message}
+    function planningCard(result){const planning=result.analysis?.planning;if(!planning)return '';const loved=(planning.loved_points||[]).slice(0,2).map(value=>value.point).join(' · ');return `<div class="result-grid"><div class="result-card"><h3>CapCut 편집 초안</h3><p>${escapeHtml(result.capcut_project||'초안 확인 필요')}</p><p>강조 자막 ${(result.analysis?.caption_events||[]).length} · 영상 움직임 ${(result.analysis?.motion_events||[]).length} · 오버레이 ${(result.analysis?.overlay_events||[]).length}</p></div><div class="result-card"><h3>기획 분석</h3><p><span class="score">시의성 ${planning.timeliness?.score||0}/5 · 후킹 ${planning.hook?.score||0}/5</span></p><p>${escapeHtml(loved||planning.topic||'')}</p></div></div>`}
+    function workspaceItems(jobs,archive){
+      const live=jobs||[],seen=new Set(live.map(item=>item.source));
+      const history=(archive||[]).filter(item=>item.work_dir&&!seen.has(item.source)).map(item=>({
+        id:'archive-'+item.archived_at,source:item.source,status:'done',progress:100,message:'보관된 작업',
+        result:{work_dir:item.work_dir,capcut_project:item.capcut_project,obsidian:{enabled:Boolean(item.obsidian_source_note),source_note_path:item.obsidian_source_note},analysis:{planning:{topic:item.topic,timeliness:{score:item.timeliness_score},hook:{score:item.hook_score},loved_points:item.loved_points||[]},caption_events:[],motion_events:[],overlay_events:[]}}
+      }));
+      return [...live,...history];
+    }
+    function renderJobs(jobs){
+      if(!jobs.length){$('jobs').innerHTML='<div class="empty">아직 맡긴 릴스가 없습니다. 위에서 첫 레퍼런스를 분석해보세요.</div>';return}
+      $('jobs').innerHTML=jobs.map(job=>{const result=job.result||{};const statusClass=job.status==='done'?'done':job.status==='failed'?'failed':'';return `<article class="job"><div class="jobtop"><div class="source">${escapeHtml(job.source)}</div><div class="state ${statusClass}">${statusLabel(job.status)}</div></div><div class="progress"><div class="bar" style="width:${job.progress}%"></div></div><div class="meta"><span>${escapeHtml(job.message)}</span><span>${job.progress}%</span></div>${job.error?`<div class="error">${escapeHtml(friendlyError(job.error))}</div>`:''}${planningCard(result)}${result.work_dir?`<div class="path-box"><strong>결과 저장 경로</strong><code>${escapeHtml(result.work_dir)}</code></div>`:''}<div class="job-actions">${result.work_dir?`<button class="button button-dark" data-action="open-folder" data-path="${escapeHtml(result.work_dir)}">결과 폴더 열기</button>`:''}<button class="button button-ghost" data-action="open-capcut">CapCut 바로가기</button>${result.obsidian?.source_note_path?`<button class="button button-soft" data-action="open-obsidian" data-path="${escapeHtml(result.obsidian.source_note_path)}">Obsidian 노트</button>`:''}</div></article>`}).join('');
+    }
+
+    function render(state){
+      currentState=state;
+      const transcriber=state.transcriber,preflight=state.preflight,obsidian=state.obsidian||{};
+      $('core').textContent=preflight.ready?'다운로드·CapCut 준비':'설치 확인 필요';$('core').className='pill '+(preflight.ready?'ok':'warn');
+      $('whisper').textContent=transcriber.available?`Whisper 준비 · ${transcriber.model}`:'Whisper 미설치';$('whisper').className='pill '+(transcriber.available?'ok':'warn');
+      $('ocr').textContent=preflight.ocr_available?'화면 글자 OCR 준비':'OCR 설치 확인 필요';$('ocr').className='pill '+(preflight.ocr_available?'ok':'warn');
+      $('obsidian').textContent=obsidian.message||'Obsidian 미연결';$('obsidian').className='pill '+(obsidian.available?'ok':'warn');
+      $('outputRoot').textContent='기본 결과 저장 경로 · '+state.output_root;
+      filterArchive();renderJobs(workspaceItems(state.jobs,state.planning_archive));
+    }
+
+    document.addEventListener('click',event=>{const button=event.target.closest('button');if(!button)return;const action=button.dataset.action;if(action==='open-folder')openFolder(button.dataset.path);if(action==='open-capcut')openCapcut();if(action==='open-obsidian')openObsidian(button.dataset.path||'')});
+    $('submitJobs').addEventListener('click',submitJobs);
+    for(const id of ['topicFilter','hookFilter','purposeFilter','insightFilter'])$(id).addEventListener(id==='topicFilter'?'input':'change',filterArchive);
+    $('resetFilters').addEventListener('click',()=>{$('topicFilter').value='';$('hookFilter').value='';$('purposeFilter').value='';$('insightFilter').value='';filterArchive()});
+    async function poll(){try{render(await api('/api/state'))}catch(error){console.error(error)}}
+    poll();setInterval(poll,1500);
+  </script>
+</body>
+</html>

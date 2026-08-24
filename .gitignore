@@ -14,3 +14,6 @@ htmlcov/
 
 # local Claude Code settings
 .claude/settings.local.json
+
+# Local history preserved when nested projects are integrated into this repo
+.nested-git-backups/

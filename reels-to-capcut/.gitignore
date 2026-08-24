@@ -1,0 +1,26 @@
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+._*
+
+# 동기화 로그 / 잠금 파일 (기기별로 다르므로 공유하지 않음)
+.sync-logs/
+
+# 임시 파일
+*.tmp
+*.swp
+*~
+__pycache__/
+*.py[cod]
+.models/
+e2e.*/
+:memory:.ses
+.omc/sessions/
+
+# 에이전트 기기별 임시 상태 (계획·명세는 공유)
+**/.omc/state/
+
+# 대용량/민감 파일이 있으면 여기에 추가하세요
+# 예) *.mp4
+# 예) secrets.txt
