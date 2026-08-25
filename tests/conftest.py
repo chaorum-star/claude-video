@@ -10,6 +10,9 @@ import pytest
 # Make the bundled scripts importable (mirrors watch.py's sys.path insert).
 SCRIPTS_DIR = Path(__file__).resolve().parent.parent / "skills" / "watch" / "scripts"
 sys.path.insert(0, str(SCRIPTS_DIR))
+# Same for the /replicate skill's scripts (module names do not collide).
+REPLICATE_SCRIPTS_DIR = Path(__file__).resolve().parent.parent / "skills" / "replicate" / "scripts"
+sys.path.insert(0, str(REPLICATE_SCRIPTS_DIR))
 
 # 14 visually distinct fills → 14 abrupt cuts → x264 emits a keyframe per cut.
 COLORS = [

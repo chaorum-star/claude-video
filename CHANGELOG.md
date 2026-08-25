@@ -2,6 +2,24 @@
 
 All notable changes to `/watch` are documented here.
 
+## [Unreleased]
+
+### Added
+- **`/replicate` skill (v0.1.0, M1 scope)** — 레퍼런스 영상의 자막 효과를 분석해 캡컷 내장
+  효과 후보로 매핑한 리포트(JSON+MD)를 만든다 (`docs/SPEC-subtitle-effect-replication.md`).
+  - `scripts/spans.py` (F1-1): VTT/JSON 트랜스크립트 → 자막 구간 후보 + 등장/퇴장 버스트
+    이벤트 목록.
+  - `scripts/bursts.py` (F1-2): 이벤트 ±0.5초 창을 10fps로 추출하는 고밀도 샘플링.
+    `/watch`의 2fps 캡을 창 안에서만 의도적으로 해제하고, 겹치는 창 병합·프레임 예산
+    가드(초과 창은 소리 내어 드랍) 포함.
+  - `scripts/effects.py` + `assets/` (F2, M2 부트스트랩): pyCapCut 메타데이터에서 생성한
+    효과 카탈로그(입장 182·유지 81·퇴장 100종, effect/resource ID 포함)와 수작업 큐레이션
+    feature→효과 매핑 테이블. 매핑 실패는 조용히 확정하지 않고 명시적 폴백 + "수동 확인
+    필요"를 반환 (F2-2). 카탈로그 재생성: `tools/build_effect_catalog.py`.
+  - 모든 효과 후보는 `verified: false` — 국제판 캡컷 실행 검증(M3 스파이크 잔여 절차)
+    전까지는 후보로만 취급.
+  - pytest 21건 추가 (spans/bursts/effects; 네트워크 없음, ffmpeg 합성 클립).
+
 ## [0.2.0] — 2026-06-29
 
 ### Added
