@@ -158,6 +158,23 @@ python3 "${SKILL_DIR}/scripts/audio_events.py" <video> <workdir>/sfx \
 
 사용자에게는 report.md 내용을 요약해 전달하고 두 파일 경로를 알려준다.
 
+## Step 8 — 캡컷 드래프트 생성 (M3/M4 출력)
+
+리포트가 확정되면(효과 후보·효과음 배치까지) 캡컷이 바로 여는 드래프트를 생성한다:
+
+```bash
+python3 "${SKILL_DIR}/scripts/draft.py" create --name <프로젝트명> \
+  --subtitles '[{"text":"자막","start":0,"end":2.5,"in":"Preview Type","out":"Fade Out"}]' \
+  --sfx '[{"path":"<workdir>/sfx/sfx_001.wav","time":2.96,"name":"전환음"}]'
+```
+
+- `in`/`out`/`loop`는 `capcut-ui-catalog.json`의 표시명 그대로 (effects.py lookup 결과의 title).
+- 효과음 클립은 프로젝트 안(`Resources/replicate_sfx/`)으로 복사되므로 원본이 임시 폴더여도 된다.
+- 셸로 쓸 네이티브 프로젝트가 하나 필요하다(캡컷에서 만든 아무 프로젝트). 없으면 스크립트가 안내한다.
+- 생성 직후 캡컷을 재시작하면 목록에 나타난다. 미캐시 효과는 "애니메이션 분실" 경고가 떴다가
+  세그먼트 선택/재생 시 캡컷이 리소스를 내려받아 해소된다 — 정상 동작이므로 사용자에게 안내할 것.
+- 텍스트는 캡컷에서 자유롭게 교체 가능하며 효과는 유지된다 (실기기 확증).
+
 ## 실패 처리
 
 - 트랜스크립트가 전혀 없으면(무음 영상 등) span 후보를 만들 수 없다 — 이때는 `/watch`
@@ -172,6 +189,7 @@ python3 "${SKILL_DIR}/scripts/audio_events.py" <video> <workdir>/sfx \
   스크립트들은 로컬 ffmpeg/ffprobe 실행과 로컬 JSON 읽기뿐이다.
 - Bundled scripts: `scripts/spans.py` (자막 구간 후보), `scripts/bursts.py` (고밀도
   프레임 버스트), `scripts/effects.py` (효과 카탈로그/매핑 조회), `scripts/audio_events.py`
-  (효과음 onset 검출 + 원본 클립 추출 — 로컬 ffmpeg만 사용). Assets:
+  (효과음 onset 검출 + 원본 클립 추출), `scripts/sfx_match.py` (효과음 라이브러리 매칭),
+  `scripts/draft.py` (네이티브 캡컷 드래프트 생성 — 로컬 파일 조작만). Assets:
   `assets/capcut-effect-catalog.json` (pyCapCut에서 생성), `assets/capcut-effect-map.json`
   (수작업 큐레이션).

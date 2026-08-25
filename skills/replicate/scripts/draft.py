@@ -29,6 +29,8 @@ from __future__ import annotations
 
 import argparse
 import json
+import shutil
+import subprocess
 import sys
 import time
 import uuid
@@ -77,6 +79,54 @@ TEXT_SEGMENT_TEMPLATE = {
 TEXT_TRACK_TEMPLATE = {
     "attribute": 0, "flag": 0, "is_default_name": True, "name": "", "type": "text",
 }
+
+AUDIO_TRACK_TEMPLATE = {
+    "attribute": 0, "flag": 0, "is_default_name": True, "name": "", "type": "audio",
+}
+AUDIO_SEGMENT_TEMPLATE = {
+    "clip": None, "hdr_settings": None, "common_keyframes": [], "keyframe_refs": [],
+    "enable_adjust": True, "enable_color_correct_adjust": False,
+    "enable_color_curves": True, "enable_color_match_adjust": False,
+    "enable_color_wheels": True, "enable_lut": True,
+    "enable_smart_color_adjust": False, "last_nonzero_volume": 1.0,
+    "render_index": 0, "reverse": False, "speed": 1.0,
+    "track_attribute": 0, "track_render_index": 0, "visible": True, "volume": 1.0,
+}
+SFX_DIR_NAME = "replicate_sfx"
+
+
+def probe_audio_duration(path: Path) -> float:
+    """Clip length in seconds via ffprobe (needed for source/target timeranges)."""
+    if shutil.which("ffprobe") is None:
+        raise SystemExit("ffprobe is not installed. Install with: brew install ffmpeg")
+    result = subprocess.run(
+        ["ffprobe", "-v", "quiet", "-print_format", "json", "-show_format",
+         str(path.resolve())],
+        capture_output=True, text=True,
+    )
+    if result.returncode != 0:
+        raise SystemExit(f"ffprobe failed for {path}: {result.stderr.strip()}")
+    duration = float(json.loads(result.stdout or "{}").get("format", {}).get("duration") or 0)
+    if duration <= 0:
+        raise SystemExit(f"오디오 길이를 읽지 못했습니다: {path}")
+    return duration
+
+
+def make_audio_material(name: str, dest_path: str, duration_us: int) -> dict:
+    material_id = uuid.uuid4().hex
+    return {
+        "app_id": 0, "category_id": "", "category_name": "local",
+        "check_flag": 3, "copyright_limit_type": "none",
+        "duration": duration_us, "effect_id": "", "formula_id": "",
+        "id": material_id, "local_material_id": material_id,
+        "music_id": material_id, "name": name, "path": dest_path,
+        "source_platform": 0, "type": "extract_music", "wave_points": [],
+    }
+
+
+def make_speed_material() -> dict:
+    return {"curve_speed": None, "id": uuid.uuid4().hex, "mode": 0,
+            "speed": 1.0, "type": "speed"}
 
 
 def read_json(path: Path) -> dict:
@@ -208,7 +258,8 @@ def make_animation_material(
     }
 
 
-def build_payload(shell_payload: dict, catalog: dict, subtitles: list[dict]) -> tuple[dict, float]:
+def build_payload(shell_payload: dict, catalog: dict, subtitles: list[dict],
+                  sfx: list[dict] | None = None) -> tuple[dict, float]:
     """Shell schema + our text track. Every list in materials is emptied first
     so nothing from the shell's own edit survives; only 자막이 남는다."""
     payload = deepcopy(shell_payload)
@@ -251,7 +302,38 @@ def build_payload(shell_payload: dict, catalog: dict, subtitles: list[dict]) -> 
         segment["extra_material_refs"] = refs
         track["segments"].append(segment)
 
-    payload["tracks"] = [track]
+    tracks = [track]
+
+    # F4-3 배치: 검출·매칭된 효과음 클립을 오디오 트랙에 상대 시각 그대로 놓는다.
+    # ``dest_path``는 install()이 프로젝트 안(Resources/replicate_sfx/)으로 복사할
+    # 최종 경로 — 원본이 임시 폴더에 있어도 드래프트는 자립적으로 유지된다.
+    if sfx:
+        materials.setdefault("audios", [])
+        materials.setdefault("speeds", [])
+        audio_track = deepcopy(AUDIO_TRACK_TEMPLATE)
+        audio_track["id"] = uuid.uuid4().hex
+        audio_track["segments"] = []
+        for item in sfx:
+            start_us = int(float(item["time"]) * 1_000_000)
+            duration_us = int(float(item["duration"]) * 1_000_000)
+            material = make_audio_material(
+                item.get("name") or Path(item["path"]).stem,
+                item["dest_path"], duration_us,
+            )
+            materials["audios"].append(material)
+            speed = make_speed_material()
+            materials["speeds"].append(speed)
+            segment = deepcopy(AUDIO_SEGMENT_TEMPLATE)
+            segment["id"] = uuid.uuid4().hex
+            segment["material_id"] = material["id"]
+            segment["source_timerange"] = {"start": 0, "duration": duration_us}
+            segment["target_timerange"] = {"start": start_us, "duration": duration_us}
+            segment["extra_material_refs"] = [speed["id"]]
+            audio_track["segments"].append(segment)
+            total_end = max(total_end, float(item["time"]) + float(item["duration"]))
+        tracks.append(audio_track)
+
+    payload["tracks"] = tracks
     payload["duration"] = int(total_end * 1_000_000)
     return payload, total_end
 
@@ -274,10 +356,14 @@ def _replace_ids_in_tree(project_dir: Path, replacements: dict[str, str]) -> Non
             path.write_text(updated, encoding="utf-8")
 
 
-def install(shell_project: Path, target_dir: Path, payload: dict, name: str, duration: float) -> dict:
+def install(shell_project: Path, target_dir: Path, payload: dict, name: str, duration: float,
+            sfx_copies: list[tuple[Path, Path]] | None = None) -> dict:
     if target_dir.exists():
         raise SystemExit(f"이미 존재하는 프로젝트입니다: {target_dir.name}")
     copytree(shell_project, target_dir)
+    for src, dst in sfx_copies or []:
+        dst.parent.mkdir(parents=True, exist_ok=True)
+        shutil.copy2(src, dst)
     timeline = native_timeline(target_dir)
     if timeline is None:
         raise SystemExit("복제한 네이티브 프로젝트 구조를 읽지 못했습니다.")
@@ -385,6 +471,9 @@ def main() -> None:
     p_create.add_argument("--name", required=True)
     p_create.add_argument("--subtitles", required=True,
                           help='JSON list: [{"text","start","end","in","out","loop"}]')
+    p_create.add_argument("--sfx", default=None,
+                          help='JSON list: [{"path","time","duration"(옵션),"name"(옵션)}] — '
+                               '효과음 클립을 오디오 트랙의 해당 시각에 배치')
     p_create.add_argument("--draft-dir", default=None)
     p_create.add_argument("--shell", default=None, help="셸로 쓸 기존 프로젝트 폴더명 (기본: 자동 선택)")
 
@@ -401,9 +490,23 @@ def main() -> None:
         raise SystemExit("--subtitles는 비어있지 않은 JSON 리스트여야 합니다.")
     draft_dir = find_draft_dir(args.draft_dir)
     shell = find_shell_project(draft_dir, args.shell)
-    payload, duration = build_payload(read_json(shell / "draft_info.json"), load_ui_catalog(), subtitles)
     target = draft_dir / args.name
-    validation = install(shell, target, payload, args.name, duration)
+
+    sfx = json.loads(args.sfx) if args.sfx else []
+    sfx_copies: list[tuple[Path, Path]] = []
+    for item in sfx:
+        src = Path(item["path"]).expanduser()
+        if not src.is_file():
+            raise SystemExit(f"효과음 파일이 없습니다: {src}")
+        if "duration" not in item:
+            item["duration"] = round(probe_audio_duration(src), 3)
+        dst = target / "Resources" / SFX_DIR_NAME / src.name
+        item["dest_path"] = str(dst)
+        sfx_copies.append((src, dst))
+
+    payload, duration = build_payload(
+        read_json(shell / "draft_info.json"), load_ui_catalog(), subtitles, sfx=sfx)
+    validation = install(shell, target, payload, args.name, duration, sfx_copies=sfx_copies)
     print(json.dumps({
         "project": str(target), "shell": shell.name, "duration_s": duration,
         "validation": validation,

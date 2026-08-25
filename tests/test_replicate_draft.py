@@ -80,3 +80,35 @@ def test_unknown_animation_title_fails_loudly():
 def test_zero_length_subtitle_rejected():
     with pytest.raises(SystemExit):
         draft.build_payload(FAKE_SHELL, FAKE_CATALOG, [{"text": "x", "start": 1, "end": 1}])
+
+
+def test_build_payload_places_sfx_on_audio_track():
+    sfx = [
+        {"path": "/tmp/a.wav", "dest_path": "/proj/Resources/replicate_sfx/a.wav",
+         "time": 0.5, "duration": 0.4, "name": "Whoosh"},
+        {"path": "/tmp/b.wav", "dest_path": "/proj/Resources/replicate_sfx/b.wav",
+         "time": 4.8, "duration": 0.6},
+    ]
+    payload, duration = draft.build_payload(
+        FAKE_SHELL, FAKE_CATALOG,
+        [{"text": "x", "start": 0, "end": 2.5, "in": "Wiping In"}], sfx=sfx,
+    )
+    assert duration == pytest.approx(5.4)  # last sfx end extends the timeline
+    types = [t["type"] for t in payload["tracks"]]
+    assert types == ["text", "audio"]
+    audio = payload["tracks"][1]
+    assert len(audio["segments"]) == 2
+    seg = audio["segments"][0]
+    assert seg["target_timerange"] == {"start": 500_000, "duration": 400_000}
+    assert seg["source_timerange"] == {"start": 0, "duration": 400_000}
+    audios = {m["id"]: m for m in payload["materials"]["audios"]}
+    speeds = {m["id"] for m in payload["materials"]["speeds"]}
+    assert audios[seg["material_id"]]["name"] == "Whoosh"
+    assert audios[seg["material_id"]]["path"].endswith("a.wav")
+    assert set(seg["extra_material_refs"]) <= speeds
+
+
+def test_build_payload_without_sfx_has_no_audio_track():
+    payload, _ = draft.build_payload(
+        FAKE_SHELL, FAKE_CATALOG, [{"text": "x", "start": 0, "end": 1}])
+    assert [t["type"] for t in payload["tracks"]] == ["text"]
