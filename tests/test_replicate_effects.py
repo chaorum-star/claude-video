@@ -29,7 +29,7 @@ def test_lookup_matched_feature_resolves_ui_titles():
     assert top["title"] == "Preview Type"  # 실제 캡컷 UI 검색창에 그대로 입력 가능한 이름
     assert top["confidence"] == "high"
     assert top["effect_id"].isdigit()
-    assert top["verified"] is False  # 시각적 매칭은 재생 검증 전
+    assert top["verified"] is True  # 2026-08-26 실기기 재생 검증 완료
 
 
 def test_lookup_unknown_feature_is_explicit_miss_not_silent():
