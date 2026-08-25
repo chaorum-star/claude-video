@@ -19,6 +19,14 @@ All notable changes to `/watch` are documented here.
   - 모든 효과 후보는 `verified: false` — 국제판 캡컷 실행 검증(M3 스파이크 잔여 절차)
     전까지는 후보로만 취급.
   - pytest 21건 추가 (spans/bursts/effects; 네트워크 없음, ffmpeg 합성 클립).
+- **M4 분석 절반 — `scripts/audio_events.py` (F4)**: 효과음 이벤트 검출 + 원본 클립 추출.
+  - ffmpeg로 모노 16kHz PCM을 뽑아 1차 차분(고주파) 에너지의 novelty 비율로 onset을
+    검출한다 — 배경음악·음성 같은 정상 성분은 깔리고 우쉬/팝 트랜지언트만 튄다
+    (D-2 확정: stdlib + ffmpeg 고수, librosa 없음).
+  - `--scenes` 장면 전환 시각 ±0.3초 내 onset은 `transition`, 나머지는 `accent` (F4-2).
+  - 이벤트별 `sfx_NNN.wav` 원본 클립 추출 (F4-3 1차) + 저작권 고지 필드 (F4-4).
+    타임라인 배치(효과음 포함 드래프트)는 M3 캡컷 검증 이후.
+  - pytest 12건 추가 (순수 함수 + 합성 오디오 종단간; 220Hz 베드 위 6kHz 버스트).
 
 ## [0.2.0] — 2026-06-29
 

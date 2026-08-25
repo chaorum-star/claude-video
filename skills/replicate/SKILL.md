@@ -1,7 +1,7 @@
 ---
 name: replicate
 version: "0.1.0"
-description: Analyze a reference video's subtitle effects for CapCut replication. Detects subtitle spans from the transcript, samples high-fps frame bursts around each entrance/exit, has Claude describe the animation features, and maps them to CapCut text-animation candidates with confidence ratings. Produces the M1 analysis report (JSON + markdown); CapCut draft generation lands in M3.
+description: Analyze a reference video's subtitle effects and sound-effect events for CapCut replication. Detects subtitle spans from the transcript, samples high-fps frame bursts around each entrance/exit, has Claude describe the animation features, maps them to CapCut text-animation candidates with confidence ratings, and detects transition/accent SFX onsets with original-audio clip extraction. Produces the analysis report (JSON + markdown); CapCut draft generation lands after the M3 verification.
 argument-hint: "<video-url-or-path>"
 allowed-tools: Bash, Read, Write
 license: MIT
@@ -13,7 +13,7 @@ user-invocable: true
 레퍼런스 영상의 자막 효과(등장/유지/퇴장 애니메이션)를 관찰해 캡컷 내장 효과 후보로
 매핑한 **분석 리포트**를 만든다. 근거 스펙: `docs/SPEC-subtitle-effect-replication.md`.
 
-> **범위 주의(M1):** 이 스킬은 분석·매핑·리포트까지만 한다. 캡컷 드래프트 생성(M3)은
+> **범위 주의(M1+M4 분석 절반):** 이 스킬은 분석·매핑·클립 추출·리포트까지만 한다. 캡컷 드래프트 생성(M3)은
 > 캡컷 실행 검증(M3 스파이크의 남은 절차)이 끝난 뒤 추가된다. 리포트의 효과 후보는 전부
 > `verified: false` — 국제판 캡컷에서 실제 재생을 확인한 적 없다는 뜻이므로, 사용자에게
 > 확정이 아니라 **후보**로 전달한다.
@@ -91,7 +91,28 @@ python3 "${SKILL_DIR}/scripts/effects.py" lookup <entrance|loop|exit> <feature>
 자산이 의심되면 `effects.py validate`로 무결성을 확인한다 (카탈로그 재생성은
 `tools/build_effect_catalog.py`, pyCapCut 체크아웃 필요).
 
-## Step 6 — 리포트 산출 (M1 Definition of Done)
+## Step 6 — 효과음 이벤트 검출 (F4, M4)
+
+```bash
+python3 "${SKILL_DIR}/scripts/audio_events.py" <video> <workdir>/sfx \
+  --scenes "<장면 전환 시각들>"
+```
+
+- 오디오의 고주파 트랜지언트(우쉬·팝·히트)를 onset으로 검출하고, `--scenes`로 준 장면
+  전환 시각 ±0.3초 안에 있으면 `transition`, 아니면 `accent`로 분류한다 (F4-2).
+  장면 전환 시각은 `/watch`의 scene-change 프레임 타임스탬프(`reason: scene-change`)를
+  그대로 쓰면 된다. 없으면 `--scenes` 생략 — 전부 `accent`로 나온다.
+- 검출된 각 이벤트는 원본에서 잘라낸 `sfx_NNN.wav`로 저장된다 (F4-3 1차 — 드래프트
+  배치는 M3 검증 뒤). 클립이 필요 없으면 `--no-clips`.
+- 무음 영상이면 스크립트가 명시적으로 실패한다 — 리포트에 "오디오 없음"으로 적는다.
+- 검출은 v1 휴리스틱이다: 점수(`score`)가 낮은 이벤트는 의심하고, 놓친 효과음이
+  의심되면 `--sensitivity`를 낮춰(예: 2.0) 재실행한다. 이벤트가 `--max-events`(기본
+  40)를 넘으면 점수 상위만 남기고 경고를 출력한다.
+- **저작권 (F4-4)**: 추출 클립은 레퍼런스 원본의 일부다. 리포트의 `copyright_notice`를
+  report.md에 그대로 옮긴다 — 개인 학습·프로토타입 용도 한정, 배포물에는 내장/라이선스
+  SFX로 교체.
+
+## Step 7 — 리포트 산출 (M1 Definition of Done)
 
 작업 디렉토리에 두 파일을 Write 한다:
 
@@ -120,7 +141,11 @@ python3 "${SKILL_DIR}/scripts/effects.py" lookup <entrance|loop|exit> <feature>
       "needs_review": false
     }
   ],
-  "unmapped": []
+  "unmapped": [],
+  "audio_events": [
+    {"index": 0, "time": 3.1, "end": 3.6, "type": "transition", "near_scene": 3.0,
+     "score": 8.2, "clip": "<workdir>/sfx/sfx_000.wav"}
+  ]
 }
 ```
 
@@ -146,6 +171,7 @@ python3 "${SKILL_DIR}/scripts/effects.py" lookup <entrance|loop|exit> <feature>
 - 이 스킬 자체는 네트워크에 나가지 않는다 — 다운로드/전사는 `/watch`가 담당하고, 여기
   스크립트들은 로컬 ffmpeg/ffprobe 실행과 로컬 JSON 읽기뿐이다.
 - Bundled scripts: `scripts/spans.py` (자막 구간 후보), `scripts/bursts.py` (고밀도
-  프레임 버스트), `scripts/effects.py` (효과 카탈로그/매핑 조회). Assets:
+  프레임 버스트), `scripts/effects.py` (효과 카탈로그/매핑 조회), `scripts/audio_events.py`
+  (효과음 onset 검출 + 원본 클립 추출 — 로컬 ffmpeg만 사용). Assets:
   `assets/capcut-effect-catalog.json` (pyCapCut에서 생성), `assets/capcut-effect-map.json`
   (수작업 큐레이션).
