@@ -1,4 +1,4 @@
-"""Effect catalog + curated feature map: consistency and lookup contract."""
+"""UI effect catalog + curated feature map v2: consistency and lookup contract."""
 from __future__ import annotations
 
 import effects
@@ -9,41 +9,35 @@ def test_assets_validate_clean():
     assert effects.validate() == []
 
 
-def test_catalog_counts_match_pycapcut_inventory():
+def test_catalog_covers_all_ui_categories():
     catalog = effects.load_catalog()
-    assert catalog["counts"] == {"intro": 182, "loop": 81, "outro": 100}
-    for category, entries in catalog["categories"].items():
-        assert len(entries) == catalog["counts"][category]
+    counts = catalog["text_animation_counts"]
+    for category in ("In", "Out", "Loop", "Caption"):
+        assert counts[category] > 0
+        assert counts[category] == len(catalog["text_animations"][category])
+    for entries in catalog["text_animations"].values():
         for entry in entries:
+            assert entry["title"]
             assert entry["effect_id"].isdigit()
-            assert entry["resource_id"].isdigit()
-            assert entry["lang"] in ("zh", "en")
 
 
-def test_lookup_matched_feature_resolves_catalog_ids():
+def test_lookup_matched_feature_resolves_ui_titles():
     result = effects.lookup("entrance", "typewriter")
     assert result["matched"] is True
     assert result["fallback"] is None
     top = result["candidates"][0]
-    assert top["name"] == "打字机"
+    assert top["title"] == "Preview Type"  # 실제 캡컷 UI 검색창에 그대로 입력 가능한 이름
     assert top["confidence"] == "high"
     assert top["effect_id"].isdigit()
-    assert top["verified"] is False  # unverified until the M3 CapCut check
+    assert top["verified"] is False  # 시각적 매칭은 재생 검증 전
 
 
-def test_lookup_unknown_feature_is_explicit_fallback_not_silent():
+def test_lookup_unknown_feature_is_explicit_miss_not_silent():
     result = effects.lookup("exit", "rainbow")
     assert result["matched"] is False
     assert result["candidates"] == []
-    assert result["fallback"]["name"] == "渐隐"
-    assert result["fallback"]["effect_id"].isdigit()
+    assert result["fallback"] is None  # v2: 기본은 무애니메이션(하드컷)
     assert "수동 확인 필요" in result["note"]
-
-
-def test_lookup_unknown_loop_feature_has_no_default():
-    result = effects.lookup("loop", "sparkle")
-    assert result["matched"] is False
-    assert result["fallback"] is None  # a subtitle with no loop effect is normal
 
 
 def test_lookup_rejects_unknown_phase():
@@ -61,7 +55,7 @@ def test_validate_flags_dangling_candidate():
     catalog = effects.load_catalog()
     fmap = effects.load_map()
     fmap["map"]["entrance"]["fade"] = [
-        {"name": "존재하지 않는 효과", "label_ko": "x", "confidence": "high", "verified": False}
+        {"title": "존재하지 않는 효과", "confidence": "high", "verified": False}
     ]
     errors = effects.validate(catalog=catalog, fmap=fmap)
     assert any("존재하지 않는 효과" in err for err in errors)

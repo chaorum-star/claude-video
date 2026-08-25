@@ -14,3 +14,4 @@ htmlcov/
 
 # local Claude Code settings
 .claude/settings.local.json
+.sfxlib/

@@ -2,14 +2,16 @@
 """Look up CapCut text-animation candidates for an observed subtitle feature.
 
 Two bundled assets under ../assets/:
-  - capcut-effect-catalog.json — generated from pyCapCut metadata
-    (tools/build_effect_catalog.py); the full id/resource inventory.
+  - capcut-ui-catalog.json — indexed from the locally installed CapCut's own
+    resource cache (tools/index_capcut_resources.py). Titles are the display
+    names the user's CapCut UI actually shows (searchable as-is).
   - capcut-effect-map.json — hand-curated feature→effect candidates with
-    confidence, per SPEC F2-1/F2-2.
+    confidence, per SPEC F2-1/F2-2 (v2: candidates reference UI titles).
 
 `lookup` never silently picks an effect for an unknown feature: it returns
-``matched: false`` plus the phase default and a needs-review note, so the
-caller must surface "수동 확인 필요" in the report (F2-2).
+``matched: false`` with a needs-review note, so the caller must surface
+"수동 확인 필요" in the report (F2-2). Defaults are null on purpose — 쇼츠
+자막의 기본은 무애니메이션(하드컷)이다.
 
 Usage:
     effects.py lookup <entrance|loop|exit> <feature>
@@ -23,11 +25,11 @@ import sys
 from pathlib import Path
 
 ASSETS_DIR = Path(__file__).resolve().parent.parent / "assets"
-CATALOG_PATH = ASSETS_DIR / "capcut-effect-catalog.json"
+CATALOG_PATH = ASSETS_DIR / "capcut-ui-catalog.json"
 MAP_PATH = ASSETS_DIR / "capcut-effect-map.json"
 
-# Feature-map phases → catalog categories.
-PHASE_TO_CATEGORY = {"entrance": "intro", "loop": "loop", "outro": "outro", "exit": "outro"}
+# Feature-map phases → UI catalog categories.
+PHASE_TO_CATEGORY = {"entrance": "In", "loop": "Loop", "exit": "Out"}
 PHASES = ("entrance", "loop", "exit")
 
 
@@ -40,15 +42,22 @@ def load_map(path: Path = MAP_PATH) -> dict:
 
 
 def catalog_index(catalog: dict) -> dict[str, dict[str, dict]]:
-    """{category: {effect name: entry}} for O(1) candidate resolution."""
-    return {
-        category: {entry["name"]: entry for entry in entries}
-        for category, entries in catalog["categories"].items()
-    }
+    """{category: {display title: entry}} for O(1) candidate resolution.
+
+    Duplicate titles within a category (the market has a few, e.g. two
+    'Golden Dust' variants in Out) keep the first entry; validate() reports
+    them so curation can avoid ambiguous references.
+    """
+    index: dict[str, dict[str, dict]] = {}
+    for category, entries in catalog["text_animations"].items():
+        bucket = index.setdefault(category, {})
+        for entry in entries:
+            bucket.setdefault(entry["title"], entry)
+    return index
 
 
 def lookup(phase: str, feature: str, catalog: dict | None = None, fmap: dict | None = None) -> dict:
-    """Resolve a feature to catalog-backed candidates, or an explicit fallback."""
+    """Resolve a feature to UI-catalog-backed candidates, or an explicit miss."""
     if phase not in PHASES:
         raise ValueError(f"Unknown phase {phase!r} (expected one of {PHASES})")
     catalog = catalog or load_catalog()
@@ -57,23 +66,22 @@ def lookup(phase: str, feature: str, catalog: dict | None = None, fmap: dict | N
 
     candidates = fmap["map"].get(phase, {}).get(feature)
     if not candidates:
-        default = fmap["defaults"].get(phase)
         return {
             "phase": phase,
             "feature": feature,
             "matched": False,
             "candidates": [],
-            "fallback": {**default, **index.get(default["name"], {})} if default else None,
+            "fallback": None,
             "note": "매핑 없음 — 리포트에 '수동 확인 필요'로 표기할 것 (F2-2). "
-                    "기본 효과는 임시 배치일 뿐 확정이 아님.",
+                    "기본은 무애니메이션(하드컷). Caption 카테고리(자막 특화 200종)도 확인해볼 것.",
         }
 
     resolved = []
     for cand in candidates:
-        entry = index.get(cand["name"])
+        entry = index.get(cand["title"])
         if entry is None:
             raise KeyError(
-                f"Feature map references {cand['name']!r} which is not in the "
+                f"Feature map references {cand['title']!r} which is not in the "
                 f"{PHASE_TO_CATEGORY[phase]!r} catalog — run effects.py validate"
             )
         resolved.append({**cand, **entry})
@@ -100,11 +108,9 @@ def validate(catalog: dict | None = None, fmap: dict | None = None) -> list[str]
         return [f"feature map unreadable: {exc}"]
 
     index = catalog_index(catalog)
-    for category, entries in catalog["categories"].items():
-        names = [e["name"] for e in entries]
-        if len(names) != len(set(names)):
-            dupes = sorted({n for n in names if names.count(n) > 1})
-            errors.append(f"catalog {category}: duplicate names {dupes}")
+    for phase, category in PHASE_TO_CATEGORY.items():
+        if category not in index:
+            errors.append(f"catalog missing category {category!r} (needed by {phase})")
 
     vocab = fmap.get("feature_vocabulary", {})
     for phase, features in fmap["map"].items():
@@ -112,22 +118,29 @@ def validate(catalog: dict | None = None, fmap: dict | None = None) -> list[str]
             errors.append(f"feature map has unknown phase {phase!r}")
             continue
         category = PHASE_TO_CATEGORY[phase]
+        titles = [e["title"] for e in catalog["text_animations"].get(category, [])]
+        dupes = {t for t in titles if titles.count(t) > 1}
         for feature, candidates in features.items():
             if vocab.get(phase) and feature not in vocab[phase]:
                 errors.append(f"{phase}.{feature}: not in feature_vocabulary")
             if not candidates:
                 errors.append(f"{phase}.{feature}: empty candidate list")
             for cand in candidates:
-                if cand["name"] not in index[category]:
+                if cand["title"] not in index.get(category, {}):
                     errors.append(
-                        f"{phase}.{feature}: candidate {cand['name']!r} not in {category} catalog"
+                        f"{phase}.{feature}: candidate {cand['title']!r} not in {category} catalog"
+                    )
+                elif cand["title"] in dupes:
+                    errors.append(
+                        f"{phase}.{feature}: candidate {cand['title']!r} is ambiguous "
+                        f"({category} has duplicates)"
                     )
                 if cand.get("confidence") not in ("high", "medium", "low"):
-                    errors.append(f"{phase}.{feature}: {cand['name']!r} bad confidence")
+                    errors.append(f"{phase}.{feature}: {cand['title']!r} bad confidence")
 
     for phase, default in fmap.get("defaults", {}).items():
-        if default and default["name"] not in index[PHASE_TO_CATEGORY[phase]]:
-            errors.append(f"defaults.{phase}: {default['name']!r} not in catalog")
+        if default is not None and default.get("title") not in index.get(PHASE_TO_CATEGORY[phase], {}):
+            errors.append(f"defaults.{phase}: {default!r} not in catalog")
     return errors
 
 
@@ -144,7 +157,9 @@ def main(argv: list[str]) -> int:
                 print(f"INVALID: {err}", file=sys.stderr)
             return 1
         catalog = load_catalog()
-        print(json.dumps({"valid": True, "counts": catalog["counts"]}, ensure_ascii=False))
+        print(json.dumps(
+            {"valid": True, "counts": catalog["text_animation_counts"]}, ensure_ascii=False
+        ))
         return 0
 
     if cmd == "features":
