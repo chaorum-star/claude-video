@@ -19,6 +19,15 @@ All notable changes to `/watch` are documented here.
   - 모든 효과 후보는 `verified: false` — 국제판 캡컷 실행 검증(M3 스파이크 잔여 절차)
     전까지는 후보로만 취급.
   - pytest 21건 추가 (spans/bursts/effects; 네트워크 없음, ffmpeg 합성 클립).
+- **캡컷 실기기 검증 + 로컬 리소스 인덱서 (2026-08-26, CapCut 9.3.0 macOS)**
+  - M3 스파이크 실기기 검증: pyCapCut 구형 드래프트는 목록 등록만 되고 **열기 실패** →
+    D-1 확정(네이티브 Timelines 구조로 전환). 네이티브 드래프트 열림 확인.
+  - `tools/index_capcut_resources.py`: 설치된 캡컷의 리소스 캐시(rp.db)에서
+    **텍스트 애니메이션 800종(In/Out/Loop/Caption, 실제 UI 표시명)** + 효과음 컬렉션
+    32종·캐시된 효과음 목록(제목+미리듣기 URL)을 `capcut-ui-catalog.json`으로 추출.
+    pyCapCut 카탈로그는 국제판과 15/363만 일치 → 카탈로그 원천 교체.
+  - 종단간 데모: 레퍼런스 쇼츠 추출 전환음 ↔ 캡컷 Swooshes 20종 매칭 동작 확인
+    (실클립은 내레이션 혼입으로 변별력 개선 필요 — 점수 갭 기반 신뢰도 등 후속).
 - **M4 분석 절반 — `scripts/audio_events.py` (F4)**: 효과음 이벤트 검출 + 원본 클립 추출.
   - ffmpeg로 모노 16kHz PCM을 뽑아 1차 차분(고주파) 에너지의 novelty 비율로 onset을
     검출한다 — 배경음악·음성 같은 정상 성분은 깔리고 우쉬/팝 트랜지언트만 튄다

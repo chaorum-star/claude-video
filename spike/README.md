@@ -9,7 +9,7 @@
 | 드래프트 생성 (`draft_content.json`) | ✅ pyCapCut으로 생성 성공 (`out/m3-spike/`) |
 | 텍스트-효과 구조 분리 (F3-2 근거) | ✅ 텍스트는 `materials.texts[].content`, 효과는 `materials.material_animations`를 세그먼트 `extra_material_refs`로 참조 — 구조적으로 분리됨 |
 | 프로그램적 텍스트 교체 후 효과 유지 | ✅ 템플릿 모드 `replace_text()`로 교체, 애니메이션 참조 유지 확인 (`out/m3-spike-replaced/`) |
-| **실제 캡컷에서 열림 검증** | ⏳ **미완 — 이 Mac에 캡컷 미설치.** 아래 절차로 검증 필요 |
+| **실제 캡컷에서 열림 검증** | ❌ **실패 (2026-08-26, CapCut 9.3.0 macOS).** 프로젝트 목록 등록은 되지만 열기는 조용히 실패. 원인: 캡컷 9.x는 네이티브 `Timelines` 구조(루트 `draft_info.json` + `Timelines/<id>/draft_info.json` + 부속 파일들)를 요구하는데 pyCapCut은 구형 `draft_content.json`만 생성 |
 
 ## D-1 (라이브러리 채택) 판단 재료
 
@@ -41,3 +41,12 @@ python3 -m venv .venv && .venv/bin/pip install pymediainfo imageio
 # 드래프트 생성
 PYCAPCUT_DIR=./pyCapCut .venv/bin/python3 m3_spike_draft.py
 ```
+
+## 2026-08-26 검증 결과 (캡컷 9.3.0 설치 후)
+
+- **D-1 확정: pyCapCut 드래프트 생성 불채택.** 위 표대로 구형 구조라 열리지 않음.
+  네이티브 Timelines 구조 생성기(`codex/reels-to-capcut-app` 브랜치의 `capcut_native.py` 접근)로 수렴할 것.
+- pyCapCut의 효과 메타데이터도 국제판 캡컷 카탈로그와 **15/363만 effect_id 일치** —
+  카탈로그 원천을 캡컷 로컬 캐시 인덱스(`tools/index_capcut_resources.py` → `capcut-ui-catalog.json`,
+  텍스트 애니메이션 800종 영문 UI명 포함)로 교체.
+- 네이티브 드래프트(0826)는 정상 열림 확인 → 스키마 참조본으로 사용 가능.
