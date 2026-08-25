@@ -1,22 +1,22 @@
 ---
 name: replicate
 version: "0.1.0"
-description: Analyze a reference video's subtitle effects and sound-effect events for CapCut replication. Detects subtitle spans from the transcript, samples high-fps frame bursts around each entrance/exit, has Claude describe the animation features, maps them to CapCut text-animation candidates with confidence ratings, and detects transition/accent SFX onsets with original-audio clip extraction. Produces the analysis report (JSON + markdown); CapCut draft generation lands after the M3 verification.
+description: Analyze a reference video's subtitle effects and sound-effect events for CapCut replication. Detects subtitle spans from the transcript, samples high-fps frame bursts around each entrance/exit, has Claude describe the animation features, maps them to CapCut text-animation candidates with confidence ratings, and detects transition/accent SFX onsets with original-audio clip extraction. Produces the analysis report (JSON + markdown) and generates a native CapCut draft with the effects and SFX placed on the timeline.
 argument-hint: "<video-url-or-path>"
 allowed-tools: Bash, Read, Write
 license: MIT
 user-invocable: true
 ---
 
-# /replicate — 레퍼런스 자막 효과 분석 (M1)
+# /replicate — 레퍼런스 자막 효과 분석 + 캡컷 드래프트 생성
 
-레퍼런스 영상의 자막 효과(등장/유지/퇴장 애니메이션)를 관찰해 캡컷 내장 효과 후보로
-매핑한 **분석 리포트**를 만든다. 근거 스펙: `docs/SPEC-subtitle-effect-replication.md`.
+레퍼런스 영상의 자막 효과(등장/유지/퇴장 애니메이션)와 효과음을 관찰해 캡컷 실제 UI
+효과로 매핑한 **분석 리포트**를 만들고(Step 1~7), 효과·효과음이 배치된 **캡컷 드래프트**
+까지 생성한다(Step 8). 근거 스펙: `docs/SPEC-subtitle-effect-replication.md`.
 
-> **범위 주의(M1+M4 분석 절반):** 이 스킬은 분석·매핑·클립 추출·리포트까지만 한다. 캡컷 드래프트 생성(M3)은
-> 캡컷 실행 검증(M3 스파이크의 남은 절차)이 끝난 뒤 추가된다. 리포트의 효과 후보는 전부
-> `verified: false` — 국제판 캡컷에서 실제 재생을 확인한 적 없다는 뜻이므로, 사용자에게
-> 확정이 아니라 **후보**로 전달한다.
+> **후보 신뢰도:** 매핑 후보의 `verified: false`는 "표시명·ID는 실제 캡컷 카탈로그의 것이
+> 확실하나, 그 효과의 시각적 느낌이 관찰 특징과 닮았는지는 재생 검증 전"이라는 뜻이다.
+> 확정이 아니라 **후보**로 전달하고, 재생으로 확인한 효과는 verified를 올린다.
 
 ## Resolve `SKILL_DIR`
 
