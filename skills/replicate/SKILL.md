@@ -31,8 +31,8 @@ user-invocable: true
 - **URL**이면 `/watch` 스킬을 `--detail efficient --out-dir <workdir>`로 먼저 실행해
   영상 다운로드 + 트랜스크립트를 받는다 (`--detail transcript`는 캡션이 있으면 영상을
   내려받지 않으므로 쓰지 않는다). 작업 디렉토리는 지우지 말 것 — 여기서 계속 쓴다.
-  - 캡션 경로였다면 workdir에 `video*.vtt`가 남는다 → Step 2에 그 파일을 준다.
-  - Whisper 경로였다면 파일이 없다 → 트랜스크립트 세그먼트를 `segments.json`으로 Write.
+  - `/watch`가 workdir에 **`transcript.json`**(세그먼트 리스트)을 항상 남긴다 → Step 2에 그 파일을 그대로 준다.
+    (구버전 watch라면 캡션 경로의 `video*.vtt`를 쓰거나 세그먼트를 직접 Write.)
 
 ## Step 2 — 자막 구간 후보 (F1-1)
 
@@ -41,8 +41,9 @@ python3 "${SKILL_DIR}/scripts/spans.py" <video.vtt 또는 segments.json>
 ```
 
 출력: `spans`(구간 후보) + `burst_events`(등장/퇴장 시각) + `burst_events_arg`
-(다음 단계에 그대로 넣을 콤마 문자열). 구간이 명백히 이상하면(예: 롤링 캡션이 한
-구간으로 뭉침) `--gap`을 줄여 재실행한다.
+(다음 단계에 그대로 넣을 콤마 문자열). **연속 내레이션 영상**(캡션 큐가 빈틈없이
+이어져 구간이 하나로 뭉개짐 — 스크립트가 경고를 출력함)은 `--segment-boundaries`로
+재실행해 세그먼트 경계를 이벤트로 쓴다.
 
 이 구간은 **말소리 기준 후보**다. 화면 자막과 다를 수 있으므로(정적 자막, 타이틀 카드),
 최종 판단은 Step 3의 프레임으로 한다.

@@ -89,3 +89,18 @@ def test_display_names_override_filenames(sfx_library: Path):
     by_path = {e["path"]: e["name"] for e in index["entries"]}
     assert by_path["ding.wav"] == "반짝임 (Sparkle)"
     assert by_path["thump.wav"] == "thump"
+
+
+def test_ambiguous_top_scores_are_not_confident(sfx_library: Path, tmp_path: Path):
+    # 라이브러리에 사실상 같은 소리가 둘 있으면 1·2위 점수가 몰린다 —
+    # 절대 점수가 높아도 변별력이 없으므로 confident=False여야 한다 (점수 갭 게이트).
+    lib = tmp_path / "duplib"
+    lib.mkdir()
+    for name in ("ding_a", "ding_b"):
+        _render(lib / f"{name}.wav", LIBRARY["ding"][0], LIBRARY["ding"][1])
+    index = sfx_match.build_index(lib)
+    result = sfx_match.match_clip(sfx_library / "ding.wav", index, top=3, threshold=60)
+    assert result["matches"][0]["score"] >= 60
+    assert result["score_gap"] is not None and result["score_gap"] < sfx_match.DEFAULT_MIN_GAP
+    assert result["confident"] is False
+    assert "변별력" in result["note"]

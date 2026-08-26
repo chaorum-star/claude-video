@@ -48,6 +48,7 @@ DECAY_FRAC = 0.10
 MAX_ANALYZE_S = 3.0        # a "short SFX" longer than this is analyzed truncated
 AUDIO_SUFFIXES = {".wav", ".mp3", ".m4a", ".aac", ".ogg", ".flac", ".opus"}
 DEFAULT_THRESHOLD = 60.0
+DEFAULT_MIN_GAP = 3.0   # top1-top2 점수 차가 이보다 작으면 변별력 없음으로 판정
 INDEX_VERSION = 1
 
 
@@ -198,7 +199,8 @@ def build_index(library_dir: Path, names: dict[str, str] | None = None) -> dict:
     }
 
 
-def match_clip(clip: Path, index: dict, top: int, threshold: float) -> dict:
+def match_clip(clip: Path, index: dict, top: int, threshold: float,
+               min_gap: float = DEFAULT_MIN_GAP) -> dict:
     features = extract_features(decode_pcm(str(clip)))
     if features is None:
         return {"clip": str(clip), "error": "clip is silent/undecodable", "matches": []}
@@ -210,14 +212,28 @@ def match_clip(clip: Path, index: dict, top: int, threshold: float) -> dict:
         key=lambda m: m["score"], reverse=True,
     )[:top]
     best = ranked[0]["score"] if ranked else 0.0
-    return {
-        "clip": str(clip),
-        "confident": best >= threshold,
-        "note": None if best >= threshold else (
+    # 점수 갭: 내레이션·음악이 섞인 실클립은 모든 후보 점수가 비슷하게 몰린다
+    # (2026-08-26 리허설: 82~84 클러스터). 절대 점수만으로는 확신할 수 없으므로
+    # 1위가 2위를 min_gap 이상 앞설 때만 confident로 판정한다.
+    gap = round(best - ranked[1]["score"], 1) if len(ranked) > 1 else None
+    discriminative = gap is None or gap >= min_gap
+    note = None
+    if best < threshold:
+        note = (
             f"최고 점수 {best} < {threshold} — 확신 없는 매칭. 라이브러리에 해당 효과음이 "
             "없거나(캡컷 캐시 미다운로드 포함) 원본 클립에 음성/음악이 섞였을 수 있음. "
             "후보를 수동 청취로 확인할 것."
-        ),
+        )
+    elif not discriminative:
+        note = (
+            f"점수 갭 {gap} < {min_gap} — 상위 후보들이 몰려 있어 변별력 없음. "
+            "원본 클립에 음성/음악이 섞였을 가능성이 큼. 후보를 수동 청취로 확인할 것."
+        )
+    return {
+        "clip": str(clip),
+        "confident": best >= threshold and discriminative,
+        "score_gap": gap,
+        "note": note,
         "matches": ranked,
     }
 
@@ -237,6 +253,8 @@ def main() -> None:
     p_match.add_argument("--index", type=Path, required=True)
     p_match.add_argument("--top", type=int, default=3)
     p_match.add_argument("--threshold", type=float, default=DEFAULT_THRESHOLD)
+    p_match.add_argument("--min-gap", type=float, default=DEFAULT_MIN_GAP,
+                         help=f"confident 판정에 필요한 1·2위 점수 차 (default {DEFAULT_MIN_GAP})")
 
     args = parser.parse_args()
 
@@ -257,7 +275,8 @@ def main() -> None:
     index = json.loads(args.index.read_text(encoding="utf-8"))
     if index.get("version") != INDEX_VERSION:
         raise SystemExit(f"Index version mismatch (expected {INDEX_VERSION}) — re-run `index`.")
-    results = [match_clip(clip, index, args.top, args.threshold) for clip in args.clips]
+    results = [match_clip(clip, index, args.top, args.threshold, min_gap=args.min_gap)
+               for clip in args.clips]
     print(json.dumps({"results": results}, ensure_ascii=False, indent=2))
 
 

@@ -76,3 +76,15 @@ def test_vtt_to_burst_pipeline(tmp_path: Path):
     proposed = spans.propose_spans(spans.load_segments(vtt))
     events = spans.burst_events(proposed)
     assert events == [1.0, 2.5, 4.0, 5.0]
+
+
+def test_segment_boundary_events_for_continuous_narration():
+    # 캡션 큐가 빈틈없이 이어지는 영상: 병합 스팬은 1개로 뭉개지지만
+    # 세그먼트 경계 모드는 모든 전환 시각 + 마지막 끝을 이벤트로 내보낸다.
+    segs = [
+        {"start": 1.0, "end": 3.0, "text": "a"},
+        {"start": 3.0, "end": 5.5, "text": "b"},
+        {"start": 5.5, "end": 7.0, "text": "c"},
+    ]
+    assert len(spans.propose_spans(segs)) == 1
+    assert spans.segment_boundary_events(segs) == [1.0, 3.0, 5.5, 7.0]

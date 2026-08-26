@@ -139,11 +139,29 @@ def burst_events(spans: list[dict], min_sep: float = DEFAULT_MIN_EVENT_SEP) -> l
     return out
 
 
+def segment_boundary_events(segments: list[dict], min_sep: float = DEFAULT_MIN_EVENT_SEP) -> list[float]:
+    """Every segment start plus the final end, deduplicated within ``min_sep``.
+
+    연속 내레이션(캡션 큐가 빈틈없이 이어지는 영상)에서는 말소리 기준 병합이
+    전부 한 구간으로 뭉개진다 — 그 경우 자막 전환은 큐 경계에서 일어나므로
+    경계 자체를 버스트 이벤트로 쓰는 것이 정답이다 (2026-08-26 리허설 확인).
+    """
+    times = sorted({s["start"] for s in segments} | ({segments[-1]["end"]} if segments else set()))
+    out: list[float] = []
+    for t in times:
+        if not out or t - out[-1] >= min_sep:
+            out.append(round(t, 3))
+    return out
+
+
 def main() -> None:
     parser = argparse.ArgumentParser(
         description="Propose subtitle spans and burst events from a transcript."
     )
     parser.add_argument("transcript", type=Path, help="WebVTT file or JSON segment list")
+    parser.add_argument("--segment-boundaries", action="store_true",
+                        help="구간 병합 대신 캡션 세그먼트 자체를 스팬으로, 그 경계를 "
+                             "버스트 이벤트로 출력 (연속 내레이션 영상용)")
     parser.add_argument("--gap", type=float, default=DEFAULT_GAP,
                         help=f"Merge segments with gaps <= this many seconds (default {DEFAULT_GAP})")
     parser.add_argument("--min-dur", type=float, default=DEFAULT_MIN_DUR,
@@ -158,8 +176,21 @@ def main() -> None:
     if not segments:
         raise SystemExit(f"No usable segments in {args.transcript}")
 
-    spans = propose_spans(segments, gap=args.gap, min_dur=args.min_dur)
-    events = burst_events(spans, min_sep=args.min_event_sep)
+    if args.segment_boundaries:
+        spans = [
+            {"index": i, "start": s["start"], "end": s["end"], "text": s["text"]}
+            for i, s in enumerate(segments)
+        ]
+        events = segment_boundary_events(segments, min_sep=args.min_event_sep)
+    else:
+        spans = propose_spans(segments, gap=args.gap, min_dur=args.min_dur)
+        events = burst_events(spans, min_sep=args.min_event_sep)
+        if len(spans) <= 1 and len(segments) >= 5:
+            print(
+                "WARNING: 캡션 큐가 빈틈없이 이어져 구간이 하나로 병합됐습니다 — "
+                "--segment-boundaries로 재실행해 세그먼트 경계를 이벤트로 쓰세요.",
+                file=sys.stderr,
+            )
     print(json.dumps(
         {
             "segment_count": len(segments),

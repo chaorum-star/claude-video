@@ -28,6 +28,16 @@ All notable changes to `/watch` are documented here.
     pyCapCut 카탈로그는 국제판과 15/363만 일치 → 카탈로그 원천 교체.
   - 종단간 데모: 레퍼런스 쇼츠 추출 전환음 ↔ 캡컷 Swooshes 20종 매칭 동작 확인
     (실클립은 내레이션 혼입으로 변별력 개선 필요 — 점수 갭 기반 신뢰도 등 후속).
+- **리허설 후속 다듬기 (2026-08-26)**
+  - `/watch`·`/replicate`를 유저 스킬(`~/.claude/skills/`)로 설치 가능함을 확인하고 심링크 설치
+    (레포 pull = 스킬 최신화).
+  - watch.py: 워크디렉토리에 `transcript.json`(세그먼트) 항상 보존 — Whisper 경로에서도
+    다운스트림(/replicate)이 파일로 받는다.
+  - spans.py `--segment-boundaries`: 연속 내레이션 영상용 세그먼트 경계 이벤트 모드 정식화
+    + 뭉개짐 자동 경고.
+  - sfx_match.py 점수 갭 게이트: 1·2위 점수 차 < 3이면 절대 점수가 높아도 `confident=false`
+    ("변별력 없음" 명시) — 내레이션 혼입 클립의 82~84 클러스터 문제 대응.
+  - pytest 2건 추가 (총 119건).
 - **M4 완주 — 효과음 타임라인 배치 (`draft.py --sfx`, 실기기 통과)**
   - 검출·추출한 효과음 클립을 오디오 트랙의 상대 시각에 배치. 클립은 프로젝트 내부
     (`Resources/replicate_sfx/`)로 복사해 드래프트를 자립적으로 유지.
