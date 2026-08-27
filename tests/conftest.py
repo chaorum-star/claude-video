@@ -10,6 +10,9 @@ import pytest
 # Make the bundled scripts importable (mirrors watch.py's sys.path insert).
 SCRIPTS_DIR = Path(__file__).resolve().parent.parent / "skills" / "watch" / "scripts"
 sys.path.insert(0, str(SCRIPTS_DIR))
+# Same for the /replicate skill's scripts (module names do not collide).
+REPLICATE_SCRIPTS_DIR = Path(__file__).resolve().parent.parent / "skills" / "replicate" / "scripts"
+sys.path.insert(0, str(REPLICATE_SCRIPTS_DIR))
 
 # 14 visually distinct fills → 14 abrupt cuts → x264 emits a keyframe per cut.
 COLORS = [
@@ -80,4 +83,59 @@ def cut_clip(tmp_path_factory: pytest.TempPathFactory) -> Path:
 def static_clip(tmp_path_factory: pytest.TempPathFactory) -> Path:
     path = tmp_path_factory.mktemp("clips") / "static.mp4"
     build_static_clip(path)
+    return path
+
+
+SFX_BURSTS = (1.0, 2.5, 4.2)
+
+
+def build_sfx_clip(
+    path: Path,
+    bursts: tuple[float, ...] = SFX_BURSTS,
+    duration: float = 6.0,
+    burst_len: float = 0.15,
+    bed: bool = True,
+) -> None:
+    """Audio-only wav: loud 6 kHz bursts at ``bursts`` over a quiet 220 Hz bed.
+
+    The bed stands in for background music — steady low-frequency content the
+    high-pass onset detector must ignore; the high-frequency bursts stand in
+    for whoosh/pop transition SFX it must catch at the exact start times.
+    """
+    segs: list[tuple[str, float]] = []
+    prev = 0.0
+    for t in bursts:
+        segs.append(("anullsrc=r=16000:cl=mono", t - prev))
+        segs.append(("sine=frequency=6000:sample_rate=16000", burst_len))
+        prev = t + burst_len
+    segs.append(("anullsrc=r=16000:cl=mono", max(0.05, duration - prev)))
+
+    inputs: list[str] = []
+    for src, length in segs:
+        inputs += ["-f", "lavfi", "-t", f"{length:.3f}", "-i", src]
+    n = len(segs)
+    concat_in = "".join(f"[{i}:a]" for i in range(n))
+    if bed:
+        inputs += ["-f", "lavfi", "-t", f"{duration:.3f}", "-i",
+                   "sine=frequency=220:sample_rate=16000"]
+        filt = (
+            f"{concat_in}concat=n={n}:v=0:a=1[b];"
+            f"[{n}:a]volume=0.05[bed];"
+            f"[b][bed]amix=inputs=2:duration=first:normalize=0[out]"
+        )
+    else:
+        filt = f"{concat_in}concat=n={n}:v=0:a=1[out]"
+    _run([
+        "ffmpeg", "-hide_banner", "-loglevel", "error", "-y",
+        *inputs,
+        "-filter_complex", filt, "-map", "[out]",
+        "-c:a", "pcm_s16le",
+        str(path),
+    ])
+
+
+@pytest.fixture(scope="session")
+def sfx_clip(tmp_path_factory: pytest.TempPathFactory) -> Path:
+    path = tmp_path_factory.mktemp("clips") / "sfx.wav"
+    build_sfx_clip(path)
     return path

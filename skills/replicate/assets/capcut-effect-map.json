@@ -1,0 +1,795 @@
+{
+  "schema_version": 2,
+  "comment": "Curated feature→effect map v2 (SPEC F2-1). 후보는 로컬 캡컷 캐시에서 인덱싱한 실제 UI 카탈로그(capcut-ui-catalog.json — In/Out/Loop 각 200종)의 표시명을 그대로 참조한다. 즉 리포트의 후보 이름은 사용자의 캡컷 검색창에 그대로 입력 가능. entrance→In, loop→Loop, exit→Out. Caption 카테고리(자막 특화 200종)는 이 매핑 밖이지만 카탈로그에 있으니 리포트에서 직접 참조 가능. verified=false는 'UI에 존재함은 확실하나 시각적 매칭(이 특징이 이 효과와 닮았는가)은 재생 검증 전'이라는 뜻. defaults가 null인 이유: 쇼츠 자막의 기본은 무애니메이션(하드컷)이므로 매핑 실패 시 아무것도 걸지 않고 '수동 확인 필요'만 표기한다 (F2-2). 순수 페이드 인·가로 슬라이드 퇴장·노래방 자막은 In/Out 카테고리에 뚜렷한 대응이 없어 후보가 없거나 low다 — Caption 카테고리(예: Transparent Fade 3)를 확인할 것.",
+  "feature_vocabulary": {
+    "entrance": [
+      "fade",
+      "slide_up",
+      "slide_down",
+      "slide_left",
+      "slide_right",
+      "wipe",
+      "typewriter",
+      "per_char",
+      "pop",
+      "bounce",
+      "zoom_in",
+      "zoom_out",
+      "spin",
+      "flip",
+      "dissolve",
+      "blur",
+      "glitch",
+      "glow",
+      "drop",
+      "shake",
+      "none"
+    ],
+    "loop": [
+      "shake",
+      "wave",
+      "pulse",
+      "glow",
+      "flicker",
+      "float",
+      "color_cycle",
+      "bounce",
+      "glitch",
+      "none"
+    ],
+    "exit": [
+      "fade",
+      "slide_down",
+      "wipe",
+      "dissolve",
+      "blur",
+      "zoom_out",
+      "zoom_in",
+      "pop",
+      "typewriter",
+      "per_char",
+      "glitch",
+      "fly_out",
+      "explode",
+      "spin",
+      "drop",
+      "none"
+    ]
+  },
+  "defaults": {
+    "entrance": null,
+    "loop": null,
+    "exit": null
+  },
+  "map": {
+    "entrance": {
+      "fade": [
+        {
+          "title": "Cross Blur",
+          "confidence": "low",
+          "verified": false
+        },
+        {
+          "title": "Slow Blink",
+          "confidence": "low",
+          "verified": false
+        }
+      ],
+      "slide_up": [
+        {
+          "title": "Rise To Surface",
+          "confidence": "medium",
+          "verified": false
+        },
+        {
+          "title": "Swing Up",
+          "confidence": "medium",
+          "verified": false
+        },
+        {
+          "title": "Upward Wave",
+          "confidence": "low",
+          "verified": false
+        }
+      ],
+      "slide_down": [
+        {
+          "title": "Fast Drop",
+          "confidence": "medium",
+          "verified": false
+        },
+        {
+          "title": "Plop Down",
+          "confidence": "medium",
+          "verified": false
+        },
+        {
+          "title": "Celestial Fall",
+          "confidence": "low",
+          "verified": false
+        }
+      ],
+      "slide_left": [
+        {
+          "title": "Showing Left",
+          "confidence": "high",
+          "verified": false
+        }
+      ],
+      "slide_right": [
+        {
+          "title": "Background Slide In",
+          "confidence": "medium",
+          "verified": false
+        },
+        {
+          "title": "Smooth Slither",
+          "confidence": "low",
+          "verified": false
+        }
+      ],
+      "wipe": [
+        {
+          "title": "Wiping In",
+          "confidence": "high",
+          "verified": false
+        }
+      ],
+      "typewriter": [
+        {
+          "title": "Preview Type",
+          "confidence": "high",
+          "verified": true
+        },
+        {
+          "title": "Typing Flicker",
+          "confidence": "medium",
+          "verified": false
+        },
+        {
+          "title": "Glow Cursor",
+          "confidence": "medium",
+          "verified": false
+        }
+      ],
+      "per_char": [
+        {
+          "title": "Preview Type",
+          "confidence": "medium",
+          "verified": false
+        },
+        {
+          "title": "Firing Row",
+          "confidence": "low",
+          "verified": false
+        }
+      ],
+      "pop": [
+        {
+          "title": "Basic Pop-up",
+          "confidence": "high",
+          "verified": false
+        },
+        {
+          "title": "Snap On",
+          "confidence": "medium",
+          "verified": false
+        },
+        {
+          "title": "Blurry Pop-In",
+          "confidence": "medium",
+          "verified": false
+        }
+      ],
+      "bounce": [
+        {
+          "title": "Rebound In",
+          "confidence": "high",
+          "verified": false
+        },
+        {
+          "title": "Exaggerated Spring",
+          "confidence": "medium",
+          "verified": false
+        },
+        {
+          "title": "Bubble Bump",
+          "confidence": "medium",
+          "verified": false
+        }
+      ],
+      "zoom_in": [
+        {
+          "title": "Dramatic In",
+          "confidence": "medium",
+          "verified": false
+        },
+        {
+          "title": "Loud Entrance",
+          "confidence": "medium",
+          "verified": false
+        },
+        {
+          "title": "Scale Echo",
+          "confidence": "low",
+          "verified": false
+        }
+      ],
+      "zoom_out": [
+        {
+          "title": "Zoom Out",
+          "confidence": "high",
+          "verified": false
+        },
+        {
+          "title": "Zoom Out 2",
+          "confidence": "medium",
+          "verified": false
+        }
+      ],
+      "spin": [
+        {
+          "title": "Half Rotation",
+          "confidence": "medium",
+          "verified": false
+        },
+        {
+          "title": "Gyrate Out",
+          "confidence": "low",
+          "verified": false
+        }
+      ],
+      "flip": [
+        {
+          "title": "Flip Merge",
+          "confidence": "medium",
+          "verified": false
+        },
+        {
+          "title": "Chalk Flip-In",
+          "confidence": "medium",
+          "verified": false
+        },
+        {
+          "title": "Mouse Flip",
+          "confidence": "low",
+          "verified": false
+        }
+      ],
+      "dissolve": [
+        {
+          "title": "Pixel Blur",
+          "confidence": "low",
+          "verified": false
+        },
+        {
+          "title": "Snowflaking In",
+          "confidence": "low",
+          "verified": false
+        }
+      ],
+      "blur": [
+        {
+          "title": "Cross Blur",
+          "confidence": "high",
+          "verified": false
+        },
+        {
+          "title": "Blur Drift-I",
+          "confidence": "medium",
+          "verified": false
+        },
+        {
+          "title": "Pixel Blur",
+          "confidence": "medium",
+          "verified": false
+        }
+      ],
+      "glitch": [
+        {
+          "title": "Glitch Flash",
+          "confidence": "high",
+          "verified": false
+        },
+        {
+          "title": "Crooked Error",
+          "confidence": "medium",
+          "verified": false
+        },
+        {
+          "title": "Broken Data",
+          "confidence": "medium",
+          "verified": false
+        },
+        {
+          "title": "Bad Scanner",
+          "confidence": "low",
+          "verified": false
+        }
+      ],
+      "glow": [
+        {
+          "title": "Aura Glow",
+          "confidence": "high",
+          "verified": false
+        },
+        {
+          "title": "Beaming",
+          "confidence": "medium",
+          "verified": false
+        },
+        {
+          "title": "Glitter Burst",
+          "confidence": "medium",
+          "verified": false
+        },
+        {
+          "title": "Bling Bling",
+          "confidence": "low",
+          "verified": false
+        }
+      ],
+      "drop": [
+        {
+          "title": "Fast Drop",
+          "confidence": "high",
+          "verified": false
+        },
+        {
+          "title": "Impact Drop",
+          "confidence": "medium",
+          "verified": false
+        },
+        {
+          "title": "Plop Down",
+          "confidence": "medium",
+          "verified": false
+        }
+      ],
+      "shake": [
+        {
+          "title": "Shaky Insertion",
+          "confidence": "high",
+          "verified": false
+        },
+        {
+          "title": "Cyber Shake",
+          "confidence": "medium",
+          "verified": false
+        }
+      ]
+    },
+    "loop": {
+      "shake": [
+        {
+          "title": "Jitter",
+          "confidence": "high",
+          "verified": false
+        },
+        {
+          "title": "Subtle Jitter",
+          "confidence": "high",
+          "verified": false
+        },
+        {
+          "title": "Glitch Shudder",
+          "confidence": "medium",
+          "verified": false
+        },
+        {
+          "title": "Wiggly Error",
+          "confidence": "low",
+          "verified": false
+        }
+      ],
+      "wave": [
+        {
+          "title": "Wave 3",
+          "confidence": "high",
+          "verified": false
+        },
+        {
+          "title": "Ebbing Wave",
+          "confidence": "medium",
+          "verified": false
+        },
+        {
+          "title": "Tidal Roll",
+          "confidence": "low",
+          "verified": false
+        }
+      ],
+      "pulse": [
+        {
+          "title": "Bolden Pulse",
+          "confidence": "high",
+          "verified": false
+        },
+        {
+          "title": "Erratic Pulse",
+          "confidence": "medium",
+          "verified": false
+        },
+        {
+          "title": "Heart Monitor",
+          "confidence": "low",
+          "verified": false
+        }
+      ],
+      "glow": [
+        {
+          "title": "Text Glow 2",
+          "confidence": "high",
+          "verified": false
+        },
+        {
+          "title": "Sliding Glow",
+          "confidence": "medium",
+          "verified": false
+        },
+        {
+          "title": "Fuzz Aura",
+          "confidence": "low",
+          "verified": false
+        }
+      ],
+      "flicker": [
+        {
+          "title": "Flicker",
+          "confidence": "high",
+          "verified": false
+        },
+        {
+          "title": "Subtle Flicker",
+          "confidence": "medium",
+          "verified": false
+        },
+        {
+          "title": "Flicker Loop",
+          "confidence": "medium",
+          "verified": false
+        },
+        {
+          "title": "Random Flicker",
+          "confidence": "medium",
+          "verified": false
+        }
+      ],
+      "float": [
+        {
+          "title": "Floating Letters",
+          "confidence": "high",
+          "verified": false
+        },
+        {
+          "title": "Sun Float",
+          "confidence": "medium",
+          "verified": false
+        },
+        {
+          "title": "Taken by Wind",
+          "confidence": "low",
+          "verified": false
+        }
+      ],
+      "color_cycle": [
+        {
+          "title": "Rainbow Shift",
+          "confidence": "high",
+          "verified": false
+        },
+        {
+          "title": "Rainbow Loop",
+          "confidence": "high",
+          "verified": false
+        },
+        {
+          "title": "Chroma Dance",
+          "confidence": "medium",
+          "verified": false
+        },
+        {
+          "title": "Cold Color Loop",
+          "confidence": "low",
+          "verified": false
+        }
+      ],
+      "bounce": [
+        {
+          "title": "Small Bounces",
+          "confidence": "high",
+          "verified": false
+        },
+        {
+          "title": "Bobbing",
+          "confidence": "medium",
+          "verified": false
+        },
+        {
+          "title": "Jelly Boing",
+          "confidence": "medium",
+          "verified": false
+        },
+        {
+          "title": "Digit Bounce",
+          "confidence": "low",
+          "verified": false
+        }
+      ],
+      "glitch": [
+        {
+          "title": "TV Glitch",
+          "confidence": "high",
+          "verified": false
+        },
+        {
+          "title": "Glitch Shudder",
+          "confidence": "medium",
+          "verified": false
+        },
+        {
+          "title": "Glitch Panic",
+          "confidence": "medium",
+          "verified": false
+        },
+        {
+          "title": "Unstable Matrix",
+          "confidence": "low",
+          "verified": false
+        }
+      ]
+    },
+    "exit": {
+      "fade": [
+        {
+          "title": "Fade Out",
+          "confidence": "high",
+          "verified": true
+        },
+        {
+          "title": "Fade Away",
+          "confidence": "medium",
+          "verified": false
+        },
+        {
+          "title": "Alternate Fade",
+          "confidence": "low",
+          "verified": false
+        },
+        {
+          "title": "Electric Fade",
+          "confidence": "low",
+          "verified": false
+        }
+      ],
+      "slide_down": [
+        {
+          "title": "Slide Down",
+          "confidence": "high",
+          "verified": false
+        },
+        {
+          "title": "Fall Back",
+          "confidence": "medium",
+          "verified": false
+        },
+        {
+          "title": "Liquid Fall",
+          "confidence": "low",
+          "verified": false
+        }
+      ],
+      "wipe": [
+        {
+          "title": "Square Eraser",
+          "confidence": "medium",
+          "verified": false
+        },
+        {
+          "title": "Slit Compress",
+          "confidence": "low",
+          "verified": false
+        }
+      ],
+      "dissolve": [
+        {
+          "title": "Dust Disperses",
+          "confidence": "high",
+          "verified": false
+        },
+        {
+          "title": "Melting Sand",
+          "confidence": "medium",
+          "verified": false
+        },
+        {
+          "title": "Smoke Fade",
+          "confidence": "medium",
+          "verified": false
+        },
+        {
+          "title": "Erosion Poof",
+          "confidence": "medium",
+          "verified": false
+        }
+      ],
+      "blur": [
+        {
+          "title": "Matrix Blur",
+          "confidence": "medium",
+          "verified": false
+        },
+        {
+          "title": "Blurry Hurl",
+          "confidence": "medium",
+          "verified": false
+        }
+      ],
+      "zoom_out": [
+        {
+          "title": "Shrink Out",
+          "confidence": "high",
+          "verified": false
+        },
+        {
+          "title": "Two-Step Zoom",
+          "confidence": "medium",
+          "verified": false
+        },
+        {
+          "title": "Water Shrink",
+          "confidence": "medium",
+          "verified": false
+        },
+        {
+          "title": "Shrink Drop",
+          "confidence": "low",
+          "verified": false
+        }
+      ],
+      "zoom_in": [
+        {
+          "title": "Zoom In",
+          "confidence": "high",
+          "verified": false
+        },
+        {
+          "title": "Flip Zoom-Out",
+          "confidence": "low",
+          "verified": false
+        }
+      ],
+      "pop": [
+        {
+          "title": "Poof Out",
+          "confidence": "high",
+          "verified": false
+        },
+        {
+          "title": "Rebound",
+          "confidence": "medium",
+          "verified": false
+        },
+        {
+          "title": "Boing",
+          "confidence": "low",
+          "verified": false
+        }
+      ],
+      "typewriter": [
+        {
+          "title": "Centered Typing",
+          "confidence": "high",
+          "verified": false
+        },
+        {
+          "title": "Verbatim Spin Out",
+          "confidence": "low",
+          "verified": false
+        }
+      ],
+      "per_char": [
+        {
+          "title": "Verbatim Spin Out",
+          "confidence": "medium",
+          "verified": false
+        }
+      ],
+      "glitch": [
+        {
+          "title": "Glitch Bars",
+          "confidence": "high",
+          "verified": false
+        },
+        {
+          "title": "Unstabilized Glitch",
+          "confidence": "medium",
+          "verified": false
+        },
+        {
+          "title": "Glitch Melt 2",
+          "confidence": "medium",
+          "verified": false
+        },
+        {
+          "title": "Glitch Smear",
+          "confidence": "low",
+          "verified": false
+        }
+      ],
+      "fly_out": [
+        {
+          "title": "Fly Out",
+          "confidence": "high",
+          "verified": false
+        },
+        {
+          "title": "Throw Out",
+          "confidence": "medium",
+          "verified": false
+        },
+        {
+          "title": "Whirlwind Out",
+          "confidence": "medium",
+          "verified": false
+        },
+        {
+          "title": "Blow Scatter",
+          "confidence": "low",
+          "verified": false
+        }
+      ],
+      "explode": [
+        {
+          "title": "Explode II",
+          "confidence": "high",
+          "verified": false
+        },
+        {
+          "title": "Magnetic Burst",
+          "confidence": "medium",
+          "verified": false
+        },
+        {
+          "title": "Text Fragments",
+          "confidence": "medium",
+          "verified": false
+        },
+        {
+          "title": "Scatter Out",
+          "confidence": "medium",
+          "verified": false
+        }
+      ],
+      "spin": [
+        {
+          "title": "Spin Vanish",
+          "confidence": "high",
+          "verified": false
+        },
+        {
+          "title": "Rotate Fade",
+          "confidence": "medium",
+          "verified": false
+        },
+        {
+          "title": "Spiral Away",
+          "confidence": "medium",
+          "verified": false
+        }
+      ],
+      "drop": [
+        {
+          "title": "Drop Out",
+          "confidence": "high",
+          "verified": false
+        },
+        {
+          "title": "Shrink Drop",
+          "confidence": "medium",
+          "verified": false
+        }
+      ]
+    }
+  }
+}

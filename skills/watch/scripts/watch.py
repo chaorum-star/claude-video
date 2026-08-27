@@ -7,6 +7,7 @@ then Reads each frame path to see the video.
 from __future__ import annotations
 
 import argparse
+import json
 import sys
 import tempfile
 from pathlib import Path
@@ -266,6 +267,17 @@ def main() -> int:
         print("[watch] no audio stream found — proceeding without transcription", file=sys.stderr)
 
     info = dl.get("info") or {}
+
+    # Persist the parsed transcript segments so downstream tools (e.g. the
+    # /replicate skill's spans.py) can consume them without re-downloading —
+    # the Whisper path otherwise leaves no transcript file on disk at all.
+    if transcript_segments:
+        try:
+            (work / "transcript.json").write_text(
+                json.dumps(transcript_segments, ensure_ascii=False), encoding="utf-8"
+            )
+        except OSError as exc:
+            print(f"[watch] could not write transcript.json: {exc}", file=sys.stderr)
 
     print()
     print("# watch: video report")

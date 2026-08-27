@@ -2,6 +2,63 @@
 
 All notable changes to `/watch` are documented here.
 
+## [Unreleased]
+
+### Added
+- **`/replicate` skill (v0.1.0, M1 scope)** — 레퍼런스 영상의 자막 효과를 분석해 캡컷 내장
+  효과 후보로 매핑한 리포트(JSON+MD)를 만든다 (`docs/SPEC-subtitle-effect-replication.md`).
+  - `scripts/spans.py` (F1-1): VTT/JSON 트랜스크립트 → 자막 구간 후보 + 등장/퇴장 버스트
+    이벤트 목록.
+  - `scripts/bursts.py` (F1-2): 이벤트 ±0.5초 창을 10fps로 추출하는 고밀도 샘플링.
+    `/watch`의 2fps 캡을 창 안에서만 의도적으로 해제하고, 겹치는 창 병합·프레임 예산
+    가드(초과 창은 소리 내어 드랍) 포함.
+  - `scripts/effects.py` + `assets/` (F2, M2 부트스트랩): pyCapCut 메타데이터에서 생성한
+    효과 카탈로그(입장 182·유지 81·퇴장 100종, effect/resource ID 포함)와 수작업 큐레이션
+    feature→효과 매핑 테이블. 매핑 실패는 조용히 확정하지 않고 명시적 폴백 + "수동 확인
+    필요"를 반환 (F2-2). 카탈로그 재생성: `tools/build_effect_catalog.py`.
+  - 모든 효과 후보는 `verified: false` — 국제판 캡컷 실행 검증(M3 스파이크 잔여 절차)
+    전까지는 후보로만 취급.
+  - pytest 21건 추가 (spans/bursts/effects; 네트워크 없음, ffmpeg 합성 클립).
+- **캡컷 실기기 검증 + 로컬 리소스 인덱서 (2026-08-26, CapCut 9.3.0 macOS)**
+  - M3 스파이크 실기기 검증: pyCapCut 구형 드래프트는 목록 등록만 되고 **열기 실패** →
+    D-1 확정(네이티브 Timelines 구조로 전환). 네이티브 드래프트 열림 확인.
+  - `tools/index_capcut_resources.py`: 설치된 캡컷의 리소스 캐시(rp.db)에서
+    **텍스트 애니메이션 800종(In/Out/Loop/Caption, 실제 UI 표시명)** + 효과음 컬렉션
+    32종·캐시된 효과음 목록(제목+미리듣기 URL)을 `capcut-ui-catalog.json`으로 추출.
+    pyCapCut 카탈로그는 국제판과 15/363만 일치 → 카탈로그 원천 교체.
+  - 종단간 데모: 레퍼런스 쇼츠 추출 전환음 ↔ 캡컷 Swooshes 20종 매칭 동작 확인
+    (실클립은 내레이션 혼입으로 변별력 개선 필요 — 점수 갭 기반 신뢰도 등 후속).
+- **리허설 후속 다듬기 (2026-08-26)**
+  - `/watch`·`/replicate`를 유저 스킬(`~/.claude/skills/`)로 설치 가능함을 확인하고 심링크 설치
+    (레포 pull = 스킬 최신화).
+  - watch.py: 워크디렉토리에 `transcript.json`(세그먼트) 항상 보존 — Whisper 경로에서도
+    다운스트림(/replicate)이 파일로 받는다.
+  - spans.py `--segment-boundaries`: 연속 내레이션 영상용 세그먼트 경계 이벤트 모드 정식화
+    + 뭉개짐 자동 경고.
+  - sfx_match.py 점수 갭 게이트: 1·2위 점수 차 < 3이면 절대 점수가 높아도 `confident=false`
+    ("변별력 없음" 명시) — 내레이션 혼입 클립의 82~84 클러스터 문제 대응.
+  - pytest 2건 추가 (총 119건).
+- **M4 완주 — 효과음 타임라인 배치 (`draft.py --sfx`, 실기기 통과)**
+  - 검출·추출한 효과음 클립을 오디오 트랙의 상대 시각에 배치. 클립은 프로젝트 내부
+    (`Resources/replicate_sfx/`)로 복사해 드래프트를 자립적으로 유지.
+  - 실기기 확인: 클립 3개가 지정 시각(0.3/2.5/4.2s)에 웨이브폼과 함께 배치·미디어 등록
+    — SPEC 성공 기준 4 충족, 성공 기준 1~4 전부 완료.
+  - SKILL.md에 Step 8(드래프트 생성) 추가, pytest 2건 추가.
+- **M3 네이티브 드래프트 생성기 — `scripts/draft.py` (실기기 통과)**
+  - 네이티브 셸 복제 + 타임라인 교체 방식(codex 브랜치 `capcut_native.py` 접근 수렴)으로
+    캡컷 9.3이 실제로 여는 드래프트를 생성. 자막 텍스트·타이밍·효과(UI 카탈로그 표시명으로
+    지정) 반영, 애니메이션 스키마는 실기기 오토세이브에서 역추출한 네이티브 형태.
+  - 미캐시 효과는 '애니메이션 분실' 경고 후 캡컷이 리소스를 자동 다운로드해 해소(정상 동작).
+  - pytest 5건 추가.
+- **M4 분석 절반 — `scripts/audio_events.py` (F4)**: 효과음 이벤트 검출 + 원본 클립 추출.
+  - ffmpeg로 모노 16kHz PCM을 뽑아 1차 차분(고주파) 에너지의 novelty 비율로 onset을
+    검출한다 — 배경음악·음성 같은 정상 성분은 깔리고 우쉬/팝 트랜지언트만 튄다
+    (D-2 확정: stdlib + ffmpeg 고수, librosa 없음).
+  - `--scenes` 장면 전환 시각 ±0.3초 내 onset은 `transition`, 나머지는 `accent` (F4-2).
+  - 이벤트별 `sfx_NNN.wav` 원본 클립 추출 (F4-3 1차) + 저작권 고지 필드 (F4-4).
+    타임라인 배치(효과음 포함 드래프트)는 M3 캡컷 검증 이후.
+  - pytest 12건 추가 (순수 함수 + 합성 오디오 종단간; 220Hz 베드 위 6kHz 버스트).
+
 ## [0.2.0] — 2026-06-29
 
 ### Added
